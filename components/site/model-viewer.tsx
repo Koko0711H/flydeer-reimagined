@@ -23,7 +23,20 @@ export default function ModelViewer({
   }, [rotating]);
   useEffect(() => {
     let disposed = false;
-    let cleanup = () => {};
+    let cleaned = false;
+    const releases: Array<() => void> = [];
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      reset.current = () => {};
+      for (const release of releases.reverse()) {
+        try {
+          release();
+        } catch {
+          /* Continue releasing independent resources. */
+        }
+      }
+    };
     Promise.all([
       import('three'),
       import('three/addons/loaders/GLTFLoader.js'),
@@ -52,6 +65,10 @@ export default function ModelViewer({
             setState('error');
             return;
           }
+          releases.push(() => {
+            renderer.dispose();
+            renderer.domElement.remove();
+          });
           renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
           renderer.outputColorSpace = THREE.SRGBColorSpace;
           renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -61,6 +78,7 @@ export default function ModelViewer({
           const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
           camera.position.set(4, 2.5, 5);
           const controls = new OrbitControls(camera, renderer.domElement);
+          releases.push(() => controls.dispose());
           controls.enableDamping = true;
           controls.dampingFactor = 0.07;
           controls.enablePan = false;
@@ -85,15 +103,18 @@ export default function ModelViewer({
                 : 'A generator model turning with page scroll',
             );
           const pmrem = new THREE.PMREMGenerator(renderer);
+          releases.push(() => pmrem.dispose());
           const room = new RoomEnvironment();
+          releases.push(() => room.dispose());
           const environment = pmrem.fromScene(room, 0.04);
+          releases.push(() => environment.dispose());
           scene.environment = environment.texture;
-          room.dispose();
-          scene.add(new THREE.HemisphereLight(0xe5f3ff, 0x526678, 3));
+          scene.add(new THREE.HemisphereLight(0xf5f5f7, 0x626268, 3));
           const key = new THREE.DirectionalLight(0xffffff, 3);
           key.position.set(4, 8, 5);
           scene.add(key);
           const draco = new DRACOLoader();
+          releases.push(() => draco.dispose());
           draco.setDecoderPath('/media/draco/');
           const loader = new GLTFLoader();
           loader.setDRACOLoader(draco);
@@ -101,9 +122,10 @@ export default function ModelViewer({
           let modelGroup: InstanceType<typeof THREE.Group> | null = null;
           let visible = true;
           let frame = 0;
+          releases.push(() => cancelAnimationFrame(frame));
           const reduce = matchMedia('(prefers-reduced-motion: reduce)');
           const draw = () => {
-            if (disposed) return;
+            if (disposed || cleaned) return;
             frame = requestAnimationFrame(draw);
             if (!visible || document.hidden) return;
             controls.autoRotate = rotation.current && !reduce.matches;
@@ -122,6 +144,7 @@ export default function ModelViewer({
             renderer.render(scene, camera);
           };
           const size = () => {
+            if (disposed || cleaned) return;
             const w = container.clientWidth,
               h = container.clientHeight;
             if (w && h) {
@@ -131,10 +154,12 @@ export default function ModelViewer({
             }
           };
           const observer = new ResizeObserver(size);
+          releases.push(() => observer.disconnect());
           observer.observe(container);
           const visibility = new IntersectionObserver(([entry]) => {
             visible = entry.isIntersecting;
           });
+          releases.push(() => visibility.disconnect());
           visibility.observe(container);
           const disposeObject = (target: InstanceType<typeof THREE.Group>) => {
             target.traverse((node) => {
@@ -152,6 +177,9 @@ export default function ModelViewer({
               }
             });
           };
+          releases.push(() => {
+            if (object) disposeObject(object);
+          });
           const keys = (event: KeyboardEvent) => {
             if (presentation) return;
             if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -164,6 +192,9 @@ export default function ModelViewer({
             }
           };
           renderer.domElement.addEventListener('keydown', keys);
+          releases.push(() =>
+            renderer.domElement.removeEventListener('keydown', keys),
+          );
           const lost = (event: Event) => {
             event.preventDefault();
             if (!disposed) {
@@ -172,26 +203,14 @@ export default function ModelViewer({
             }
           };
           renderer.domElement.addEventListener('webglcontextlost', lost);
-          let cleaned = false;
-          cleanup = () => {
-            if (cleaned) return;
-            cleaned = true;
-            cancelAnimationFrame(frame);
-            observer.disconnect();
-            visibility.disconnect();
-            controls.dispose();
-            draco.dispose();
-            environment.dispose();
-            pmrem.dispose();
-            renderer.dispose();
-            renderer.domElement.remove();
-            if (object) disposeObject(object);
-          };
+          releases.push(() =>
+            renderer.domElement.removeEventListener('webglcontextlost', lost),
+          );
           size();
           draw();
           try {
             const gltf = await loader.loadAsync(`/media/models/${id}.glb`);
-            if (disposed) {
+            if (disposed || cleaned) {
               disposeObject(gltf.scene);
               return;
             }
@@ -226,6 +245,7 @@ export default function ModelViewer({
         },
       )
       .catch(() => {
+        cleanup();
         if (!disposed) setState('error');
       });
     return () => {
@@ -252,8 +272,8 @@ export default function ModelViewer({
           className={`model-status ${presentation ? 'presentation-status' : ''}`}
         >
           {lang === 'zh'
-            ? '正在加载原站三维模型…'
-            : 'Loading the original 3D model…'}
+            ? '正在加载产品三维模型…'
+            : 'Loading the product 3D model…'}
         </output>
       ) : null}
       {state === 'error' && !presentation ? (

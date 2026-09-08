@@ -12,11 +12,53 @@ import {
 } from '@/components/ui/sheet';
 import { contact, navigation } from '@/lib/content';
 import { useLanguage } from './provider';
+import { scrollPageTo } from './scroll';
+
+const storyNavigation = [
+  { id: 'products', zh: '产品中心', en: 'Products' },
+  { id: 'company', zh: '关于福瑞斯', en: 'About FRS' },
+  { id: 'showroom', zh: '网上展厅', en: 'Showroom' },
+  { id: 'industries', zh: '行业应用', en: 'Industries' },
+  { id: 'cases', zh: '现场应用', en: 'Applications' },
+];
 
 export function Header() {
   const { lang, setLang } = useLanguage();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [chapter, setChapter] = useState('start');
+  useEffect(() => {
+    const update = (event: Event) =>
+      setChapter((event as CustomEvent<string>).detail);
+    window.addEventListener('frs:chapter', update);
+    return () => window.removeEventListener('frs:chapter', update);
+  }, []);
+  const storyHref = (id: string) =>
+    pathname === '/' ? `#${id}` : `/?lang=${lang}#${id}`;
+  const goToChapter = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) => {
+    if (
+      pathname !== '/' ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    const node = document.getElementById(id);
+    if (!node) return;
+    event.preventDefault();
+    setOpen(false);
+    history.pushState(null, '', `?lang=${lang}#${id}`);
+    // Wait for the menu's scroll lock to be released before asking Lenis to seek.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() =>
+        scrollPageTo(node.getBoundingClientRect().top + scrollY),
+      ),
+    );
+  };
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('flydeer:overlay', { detail: open }));
     return () => {
@@ -33,23 +75,30 @@ export function Header() {
       </a>
       <header className="site-header">
         <span className="page-scroll-progress" aria-hidden="true" />
-        <a href={`/?lang=${lang}`} aria-label="FlyDeer">
+        <a
+          href={storyHref('start')}
+          onClick={(event) => goToChapter(event, 'start')}
+          aria-label="FRS POWER"
+        >
           <img
-            src="/media/logo.svg"
-            alt="FlyDeer 深柴能源"
+            src="/media/frs-logo.png"
+            alt="FRS POWER 福瑞斯"
             className="brand"
-            width="145"
-            height="44"
+            width="140"
+            height="70"
           />
         </a>
         <nav aria-label={lang === 'zh' ? '主导航' : 'Main navigation'}>
-          {navigation.slice(1).map((n) => (
+          {storyNavigation.map((n) => (
             <a
-              href={`${n.href}?lang=${lang}`}
-              key={n.href}
-              aria-current={pathname === n.href ? 'page' : undefined}
+              href={storyHref(n.id)}
+              onClick={(event) => goToChapter(event, n.id)}
+              key={n.id}
+              aria-current={
+                pathname === '/' && chapter === n.id ? 'location' : undefined
+              }
             >
-              {n.label[lang]}
+              {n[lang]}
             </a>
           ))}
         </nav>
@@ -61,7 +110,11 @@ export function Header() {
           >
             {lang === 'zh' ? 'EN' : '中文'}
           </button>
-          <a className="header-contact" href={`/service?lang=${lang}#contact`}>
+          <a
+            className="header-contact"
+            href={storyHref('contact')}
+            onClick={(event) => goToChapter(event, 'contact')}
+          >
             {lang === 'zh' ? '获取报价' : 'Get in touch'}
             <ArrowUpRight size={17} />
           </a>
@@ -82,7 +135,7 @@ export function Header() {
               data-lenis-prevent
             >
               <div className="sheet-top">
-                <SheetTitle>FLYDEER</SheetTitle>
+                <SheetTitle>FRS POWER</SheetTitle>
                 <SheetClose
                   render={
                     <button
@@ -98,16 +151,23 @@ export function Header() {
                 {lang === 'zh' ? '网站导航' : 'Site navigation'}
               </SheetDescription>
               <nav>
-                {navigation.map((n) => (
+                {storyNavigation.map((n) => (
                   <a
-                    key={n.href}
-                    href={`${n.href}?lang=${lang}`}
-                    onClick={() => setOpen(false)}
+                    key={n.id}
+                    href={storyHref(n.id)}
+                    onClick={(event) => goToChapter(event, n.id)}
                   >
-                    {n.label[lang]}
+                    {n[lang]}
                     <ArrowUpRight />
                   </a>
                 ))}
+                <a
+                  href={storyHref('contact')}
+                  onClick={(event) => goToChapter(event, 'contact')}
+                >
+                  {lang === 'zh' ? '销售与服务' : 'Contact & service'}
+                  <ArrowUpRight />
+                </a>
               </nav>
               <a href={contact.tel}>{contact.phone}</a>
             </SheetContent>
@@ -163,10 +223,10 @@ export function Footer() {
       <div className="footer-main">
         <div>
           <img
-            src="/media/logo.svg"
-            alt="FlyDeer 深柴能源"
-            width="145"
-            height="44"
+            src="/media/frs-logo.png"
+            alt="FRS POWER 福瑞斯"
+            width="140"
+            height="70"
             className="brand"
           />
           <p>
@@ -196,7 +256,7 @@ export function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} FLYDEER 深柴能源</span>
+        <span>© {new Date().getFullYear()} FRS POWER 福瑞斯</span>
         <span>ENGINEERED FOR YOUR WORLD.</span>
         <a href="#main">
           {lang === 'zh' ? '返回顶部' : 'Back to top'}

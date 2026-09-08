@@ -30,8 +30,8 @@ export function ShowroomPage() {
           </div>
           <p>
             {lang === 'zh'
-              ? '先看产品影像，也可以打开三维模型，自由查看设备布局。模型来自原站素材，仅作外观展示。'
-              : 'Explore product films, or open a 3D model to view the equipment layout. Original site models are illustrative, not configuration drawings.'}
+              ? '先看产品影像，也可以打开三维模型，自由查看设备布局。产品模型仅作外观展示。'
+              : 'Explore product films, or open a 3D model to view the equipment layout. Product models illustrate appearance; please refer to the confirmed configuration drawings.'}
           </p>
         </div>
         <div className="showroom-layout">

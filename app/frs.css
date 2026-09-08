@@ -1,0 +1,322 @@
+/* FRS POWER: original red identity, product-first composition, calm surfaces. */
+:root {
+  --frs-red: #ec0016;
+  --frs-link: #c70018;
+  --frs-ink: #1d1d1f;
+  --frs-gray: #626268;
+  --frs-surface: #f5f5f7;
+}
+body {
+  background: #fff;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.wrap {
+  width: min(86%, 1320px);
+}
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--frs-gray);
+}
+.pill {
+  padding: 13px 24px;
+  gap: 26px;
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.pill.primary {
+  background: var(--frs-red);
+}
+.pill.primary:hover {
+  background: #c70018;
+}
+.text-link {
+  color: var(--frs-link);
+  border-bottom-color: #d9b4b9;
+}
+.site-header {
+  height: 80px;
+  padding: 5px 4vw;
+  gap: 24px;
+  color: var(--frs-ink);
+  background: #ffffffed;
+  border-bottom: 1px solid #e8e8ec;
+  backdrop-filter: blur(20px);
+}
+.site-header .brand {
+  width: 128px;
+  height: 64px;
+  object-fit: contain;
+  filter: none;
+}
+.site-header nav {
+  font-size: 14px;
+  gap: clamp(17px, 1.7vw, 28px);
+}
+.site-header nav a::after {
+  bottom: -12px;
+}
+.header-actions {
+  gap: 22px;
+}
+.language-toggle {
+  min-width: 36px;
+  min-height: 44px;
+  font-size: 14px;
+}
+.header-contact {
+  background: var(--frs-red);
+  color: white;
+  padding: 10px 17px;
+  border-radius: 99px;
+  font-size: 14px;
+  gap: 12px;
+}
+.page-scroll-progress {
+  height: 2px;
+  inset: auto 0 -1px;
+}
+.why-section {
+  padding-block: 140px;
+  gap: 10%;
+}
+.why-statement h2 {
+  font-size: clamp(36px, 4.2vw, 60px);
+  line-height: 1.24;
+}
+.why-statement h2 span {
+  color: #86868b;
+}
+.why-points h3 {
+  font-size: 24px;
+}
+.why-points p {
+  font-size: 16px;
+  color: #626268;
+}
+.industry-copy h2 {
+  line-height: 1.23;
+}
+.industry-copy p,
+.industry-item p {
+  font-size: 16px;
+}
+.industry-item a {
+  font-size: 14px;
+}
+.industry-image {
+  border-radius: 20px;
+  background: #f5f5f7;
+}
+.company-teaser,
+.company-sticky {
+  background: #1d1d1f;
+}
+.company-copy .eyebrow {
+  color: #c6c6cd;
+}
+.company-copy > p:not(.eyebrow) {
+  color: #ceced3;
+  font-size: 16px;
+}
+.company-copy h2 {
+  line-height: 1.24;
+}
+.case-section {
+  background: #f5f5f7;
+}
+.case-section .section-heading h2 {
+  font-size: clamp(42px, 5.8vw, 78px);
+}
+.section-heading h2 span {
+  color: #86868b;
+}
+.section-heading > p {
+  color: #626268;
+}
+.case-caption small {
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+.contact-band {
+  background: #f5f5f7;
+  color: #1d1d1f;
+  border-top: 1px solid #e8e8ed;
+}
+.contact-band h2 {
+  font-size: clamp(42px, 5.4vw, 76px);
+  line-height: 1.2;
+}
+.contact-band-info > p {
+  color: #626268;
+}
+.contact-band .pill.light {
+  background: var(--frs-red);
+  color: white;
+}
+.contact-phone {
+  font-size: 22px;
+}
+.site-footer {
+  background: #fff;
+  color: #424247;
+  padding-top: 65px;
+}
+.site-footer .brand {
+  filter: none;
+  width: 160px;
+  height: 80px;
+  object-fit: contain;
+  margin-left: -18px;
+}
+.footer-main > div:first-child p,
+.footer-contact p {
+  color: #6c6c73;
+  font-size: 14px;
+}
+.footer-links,
+.footer-contact {
+  font-size: 14px;
+}
+.footer-bottom {
+  border-color: #dedee3;
+  color: #73737b;
+  font-size: 12px;
+}
+.page-hero {
+  background: #f5f5f7;
+  padding-top: 155px;
+}
+.page-hero.dark {
+  background: #1d1d1f;
+}
+.page-hero.dark .eyebrow {
+  color: #c6c6cd;
+}
+.catalog-card {
+  border: 0;
+  background: #f5f5f7;
+  border-radius: 18px;
+}
+.catalog-film {
+  background: #f5f5f7;
+}
+.catalog-card-copy > p:not(.eyebrow):not(.range) {
+  font-size: 16px;
+}
+.navigation-sheet {
+  background: white;
+  color: #1d1d1f;
+}
+.navigation-sheet [data-slot='sheet-title'] {
+  color: #c70018;
+}
+@media (max-width: 1100px) {
+  .site-header nav {
+    gap: 15px;
+    font-size: 13px;
+  }
+  .header-actions {
+    gap: 12px;
+  }
+}
+@media (max-width: 760px) {
+  .site-header {
+    height: 70px;
+    padding-inline: 5%;
+  }
+  .site-header .brand {
+    width: 116px;
+    height: 58px;
+  }
+  .header-actions {
+    gap: 16px;
+  }
+  .menu-toggle {
+    min-width: 40px;
+    min-height: 44px;
+  }
+  .pill {
+    gap: 18px;
+    padding: 12px 19px;
+  }
+  .why-section {
+    padding-block: 80px;
+    gap: 48px;
+  }
+  .why-statement h2 {
+    font-size: 37px;
+  }
+  .why-points h3 {
+    font-size: 22px;
+  }
+  .industry-section {
+    padding-block: 85px;
+    gap: 42px;
+  }
+  .industry-copy h2 {
+    font-size: 35px;
+  }
+  .contact-band {
+    padding-block: 80px;
+  }
+  .contact-band h2 {
+    font-size: 42px;
+  }
+  .footer-main {
+    gap: 35px;
+  }
+  .footer-bottom {
+    line-height: 1.8;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    animation: none;
+  }
+}
+/* A single camera journey connects the product to its destination. */
+html {
+  scroll-padding-top: 80px;
+}
+@media (max-width: 760px) {
+  html {
+    scroll-padding-top: 70px;
+  }
+}
+@media (max-width: 760px) {
+  .page-hero h1 {
+    font-size: clamp(34px, 9.2vw, 40px);
+    line-height: 1.25;
+  }
+}
+.navigation-sheet {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.navigation-sheet > *,
+.navigation-sheet nav {
+  flex-shrink: 0;
+}
+@media (max-height: 560px) {
+  .navigation-sheet {
+    padding-block: 20px;
+    gap: 18px !important;
+  }
+  .navigation-sheet nav {
+    gap: 12px;
+  }
+  .navigation-sheet nav a {
+    font-size: 20px;
+    min-height: 40px;
+  }
+}

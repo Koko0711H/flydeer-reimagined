@@ -26,7 +26,7 @@ test('all 13 static routes have content and a branded title', async () => {
   for (const route of routes) {
     const html = await readFile(path.join(output, `${route}.html`), 'utf8');
     assert.match(html, /<main[^>]+id="main"/);
-    assert.match(html, /<title>[^<]*FlyDeer/);
+    assert.match(html, /<title>[^<]*FRS POWER/);
     assert.ok(html.length > 1000);
   }
 });

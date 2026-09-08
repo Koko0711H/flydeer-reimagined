@@ -11,7 +11,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   return {
-    title: `${products.find((p) => p.id === id)?.name.zh ?? '产品'} | FlyDeer 深柴能源`,
+    title: `${products.find((p) => p.id === id)?.name.zh ?? '产品'} | FRS POWER 福瑞斯`,
   };
 }
 export default async function ProductPage({

@@ -1,6 +1,6 @@
 import { CaseGallery } from '@/components/site/case-gallery';
 import { ContactBand } from '@/components/site/chrome';
-export const metadata = { title: '项目应用场景 | FlyDeer 深柴能源' };
+export const metadata = { title: '项目应用场景 | FRS POWER 福瑞斯' };
 export default function CasesPage() {
   return (
     <main id="main">

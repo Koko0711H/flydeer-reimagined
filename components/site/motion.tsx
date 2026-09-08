@@ -27,38 +27,35 @@ export function MotionSystem() {
         media.add(
           '(prefers-reduced-motion: no-preference) and (min-height: 621px)',
           () => {
-            const hero = document.querySelector<HTMLElement>('.hero');
+            const hero = document.querySelector<HTMLElement>('.frs-hero');
             if (hero) {
-              hero.dataset.kinetic = 'true';
               const timeline = gsap.timeline({
                 scrollTrigger: {
                   trigger: hero,
                   start: 'top top',
-                  end: 'bottom bottom',
+                  end: 'bottom 15%',
                   scrub: 0.5,
                 },
               });
               timeline
-                .to('.hero-film', { scale: 1.3, yPercent: 12, ease: 'none' }, 0)
                 .to(
-                  '.hero-copy',
-                  { yPercent: -26, xPercent: -4, opacity: 0.12, ease: 'none' },
+                  '.frs-hero-object',
+                  { scale: 1.12, yPercent: -10, ease: 'none' },
                   0,
                 )
                 .to(
-                  '.hero-sticky',
-                  { clipPath: 'inset(4% 4% 4% 4% round 32px)', ease: 'none' },
+                  '.frs-hero-copy',
+                  { y: -55, opacity: 0.18, ease: 'none' },
                   0,
-                )
-                .to('.hero-bottom', { y: -30, opacity: 0, ease: 'none' }, 0);
+                );
             }
             gsap.utils
               .toArray<HTMLElement>('.why-points article')
-              .forEach((el, index) => {
+              .forEach((el) => {
                 gsap.from(el, {
-                  x: 85 + index * 25,
-                  y: 65,
-                  rotation: 4 + index * 2,
+                  x: 0,
+                  y: 45,
+                  rotation: 0,
                   opacity: 0.12,
                   ease: 'none',
                   scrollTrigger: {
@@ -74,9 +71,9 @@ export function MotionSystem() {
               .forEach((el) => {
                 gsap.fromTo(
                   el,
-                  { color: '#a1b4c3' },
+                  { color: '#b6b6bc' },
                   {
-                    color: '#075ca7',
+                    color: '#c70018',
                     scrollTrigger: {
                       trigger: el,
                       start: 'top 85%',
@@ -432,7 +429,7 @@ export function MotionSystem() {
                 const lenis = new Lenis({
                   lerp: 0.1,
                   syncTouch: false,
-                  anchors: { offset: -88 },
+                  anchors: { offset: 0 },
                   prevent: (node) => node.hasAttribute('data-lenis-prevent'),
                 });
                 lenis.on('scroll', () => ScrollTrigger.update());
@@ -463,14 +460,14 @@ export function MotionSystem() {
             smoothCleanup = () => smoothMedia.revert();
           })
           .catch((error: unknown) =>
-            console.warn('[FlyDeer] Native scrolling retained.', error),
+            console.warn('[FRS POWER] Native scrolling retained.', error),
           );
       })
       .catch((error: unknown) => {
         cleanup();
         document.documentElement.dataset.motionStatus = 'fallback';
         console.warn(
-          '[FlyDeer] Motion unavailable; static content remains accessible.',
+          '[FRS POWER] Motion unavailable; static content remains accessible.',
           error,
         );
       });

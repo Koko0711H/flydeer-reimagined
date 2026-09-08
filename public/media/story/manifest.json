@@ -1,0 +1,73 @@
+{
+  "version": 3,
+  "frameCount": 430,
+  "firstFrame": 1,
+  "lastFrame": 430,
+  "width": 1000,
+  "height": 714,
+  "alpha": true,
+  "format": "webp",
+  "quality": 86,
+  "cyclesSamples": 8,
+  "denoising": true,
+  "filenameTemplate": "motion/frame-{frame:04d}.webp",
+  "sourceFrameFormula": "1 + (denseFrame - 1) / 3",
+  "sourceFrameRange": [
+    1,
+    144
+  ],
+  "subdivisionsPerOriginalInterval": 3,
+  "scrollDriven": true,
+  "totalBytes": 17508174,
+  "camera": "Same approved 144-frame Blender scene, evaluated at true 1/3 subframes",
+  "segments": [
+    {
+      "id": "open",
+      "frames": [
+        1,
+        60
+      ],
+      "originalStart": 1
+    },
+    {
+      "id": "lift",
+      "frames": [
+        61,
+        99
+      ],
+      "originalStart": 21
+    },
+    {
+      "id": "front",
+      "frames": [
+        100,
+        144
+      ],
+      "originalStart": 34
+    },
+    {
+      "id": "load",
+      "frames": [
+        145,
+        282
+      ],
+      "originalStart": 49
+    },
+    {
+      "id": "truckside",
+      "frames": [
+        283,
+        330
+      ],
+      "originalStart": 95
+    },
+    {
+      "id": "trucktop",
+      "frames": [
+        331,
+        430
+      ],
+      "originalStart": 111
+    }
+  ]
+}

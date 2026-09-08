@@ -183,7 +183,7 @@
   margin-bottom: 36px;
 }
 .journey-copy h2 span {
-  color: #6a879d;
+  color: #828285;
 }
 .journey-description {
   animation: scene-copy-change 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -192,7 +192,7 @@
   display: none;
 }
 .journey-description .eyebrow {
-  color: #536f86;
+  color: #6b6b6e;
   font-size: 12px;
 }
 .journey-description h3 {
@@ -205,7 +205,7 @@
 }
 .journey-description > p:not(.eyebrow):not(.product-range) {
   max-width: 390px;
-  color: #526a80;
+  color: #666669;
   font-size: 16px;
 }
 .journey-description .pill {
@@ -221,7 +221,7 @@
   inset: 0 0 auto auto;
   font: 700 clamp(170px, 25vw, 400px)/1 var(--font-body);
   letter-spacing: -0.09em;
-  color: #ccdfed;
+  color: #dcdcdf;
   pointer-events: none;
 }
 .journey-model {
@@ -259,8 +259,8 @@
   padding: 6px 10px;
   border-radius: 20px;
   font-size: 12px;
-  color: #526a80;
-  background: #e8f1f8d9;
+  color: #666669;
+  background: #f0f0f3d9;
   z-index: 2;
 }
 .journey-object-foot {
@@ -272,7 +272,7 @@
   justify-content: space-between;
   gap: 16px;
   font-size: 12px;
-  color: #4a6b85;
+  color: #666669;
   z-index: 2;
 }
 .journey-object-foot a,
@@ -294,7 +294,7 @@
   padding: 0 !important;
   gap: 0 !important;
   border-radius: 0 !important;
-  border-top: 1px solid #b9cddd;
+  border-top: 1px solid #cacacd;
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -310,10 +310,10 @@
 .journey-nav button > span {
   font-family: var(--font-utility);
   font-size: 12px;
-  color: #5c7b94;
+  color: #767679;
 }
 .journey-nav button[data-active] {
-  background: #d3e4f1;
+  background: #e1e1e4;
   color: var(--blue);
 }
 .product-journey-progress {
@@ -369,7 +369,7 @@
   position: absolute;
   inset: auto 0 0;
   padding: 60px 35px 30px;
-  background: linear-gradient(transparent, #041b32ce);
+  background: linear-gradient(transparent, #18181bce);
   display: grid;
   z-index: 2;
 }
@@ -394,7 +394,7 @@
 .case-kinetic-sticky {
   padding: 48px 0 25px;
   overflow: clip;
-  background: #eef3f7;
+  background: #f2f2f5;
 }
 .case-kinetic .section-heading {
   margin-bottom: 8px;

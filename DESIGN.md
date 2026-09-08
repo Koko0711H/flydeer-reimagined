@@ -1,23 +1,34 @@
-# FlyDeer / 动力新视界
+# 福瑞斯 / FRS POWER
 
-独立新站。原 shenchai-main 项目与原 GitHub 仓库不做任何更改；仅复制公开品牌素材。联系方式逐字沿用原站。
+The supplied red logo and authorized generator/factory media are the brand authority. Original shenchai-main remains untouched. The homepage is a continuous cinematic journey, as clarified by the user after the first standalone delivery-section implementation.
 
-## 视觉方向
+## Visual direction
 
-面向采购与工程客户：快速看产品、理解交付能力、找到联系人。主张“让动力，走得更远”。
+Apple-like clarity and a generator’s journey from manufacturing to a working site. Large products, generous negative space, precise type. The moving object participates in page composition and changes position, scale, angle and environment across chapters. No detached miniature display stage.
 
-- 深海蓝 #061F36、工程蓝 #075CA7、冰蓝 #E8F1F8、冷白 #F5F7F9、品牌红 #ED3E47。
-- 标题：Helvetica Neue / PingFang SC，中大字重、大留白；正文同系统字体体系；产品数据与图注用 SFMono-Regular / Consolas。
-- 首屏保留原视频，后续以产品展台、横向制造叙事、圆角空间案例画廊形成节奏。避免满页卡片网格、装饰性数据和绿色副色。
-- 当前修订：用户明确要求整站大量、明显的动态交互。首屏摄像推进 → 原机组三维产品展台 → 行业画面展开 → 制造照片连续转场 → 圆角空间案例画廊，保持原模块顺序与内容。
-- 电脑与手机都随原生向下滚动推进场景；产品和案例可直接点选跳转，案例可横向拖动。短屏与减少动态偏好使用原生布局，不锁滚动、不隐藏内容。
+White/light gray #F5F5F7, charcoal #18191B, ink #1D1D1F, original logo red #EC0016 and legible red #C70018. Helvetica Neue / PingFang SC / system sans. Display 600, tracking -0.035em, normal body 16px. Product selection is a simple ruled list; controls remain semantic DOM.
 
-## 动效来源与边界
+## Eight connected shots
 
-GSAP ScrollTrigger 控制连续场景与局部横向章节；Lenis 仅为桌面可选滚动增强，其失败不阻断动画。案例画廊使用自编空间布局与指针交互；不依赖私有轮播 API。ReactBits CircularGallery 仅视觉研究，未复制其源码。Three.js 在产品区接近视口时按需载入原站 GLB；每次只显示当前一款，离屏暂停渲染。普通按钮使用轻量磁性反馈，卡片使用小幅透视交互。
+| Chapter    | Content                                                | Spatial transition                                                                                   |
+| ---------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| start      | FRS identity and generator                             | Large machine alongside the title; follows the scroll into product space                             |
+| products   | Five types, original ranges, film, detail and 3D links | Same open-frame generator moves right; selection stays in an independent left panel                  |
+| company    | Fabrication, assembly, checks                          | Machine lifts into the left foreground; factory photography expands behind it                        |
+| showroom   | Configuration, maintenance, integration                | Camera rotates frontward; factory recedes and clear product space returns                            |
+| delivery   | Transport, positioning, installation                   | Rig releases, generator enters container; dark lower plane becomes the next page boundary            |
+| industries | Four selectable industries                             | Complete truck travels along the light/dark boundary, then camera rises to a top view                |
+| cases      | Seven applications, selector and details               | Truck moves upward out of view while a site photograph fills the viewport                            |
+| contact    | Inquiry and original phone                             | Site view shrinks toward the upper right, becomes actual delivery imagery; red FRS typography closes |
 
-不复制参考网站排版、文字、商标。设计视频仅研究物体连续性与透视转场，不下载视频素材。
+One native sticky visual stage belongs to the entire homepage. Eight semantic sections have different document lengths; their content uses readable holds and fades while the shared object crosses between them. Stage coordinates, sequence frame, backgrounds and active navigation derive from the same absolute scroll value. Source frames do not drive scroll. No accumulated on-enter timeline state.
 
-## 内容边界
+## Navigation and access
 
-图片和产品范围来自原站公开素材，不新增客户背书、星级评价、认证、检测结果或具体项目参数。案例按场景展示，避免将素材误写为已核实的客户项目。新闻无已审核文章时明确空状态。联系表单生成邮件草稿，不假称已提交到服务器。
+Header links go to actual home chapter anchors; full catalog, about, showroom, cases, news and service remain directly accessible within chapters and footer. This is continuity across homepage chapters, not a claim of uninterrupted Canvas lifetime across a full document navigation. Mobile has its own object placement and text layout. Short screens and reduced motion use normal-flow content plus meaningful stills. Without JavaScript the document is readable. Hidden shots do not intercept pointer clicks; keyboard focus reveals content.
+
+## Runtime and truth
+
+Original generator GLB, newly authored crane/container/truck, one430-frame transparent WebP sequence sampled at thirds of the original144-frame timeline. Desktop decoded window±12; mobile±6 at640px width; at most3 concurrent downloads and2 decodes. Encoded blobs stay cached; eviction and unmount close bitmaps. Actor movement uses transforms, with linear source-frame sampling and explicit holds. Reverse scrolling and section jumps are seekable. Keep static assets and original videos as accessible alternatives.
+
+No invented customer projects, certifications or performance promises. Original contact values, including email spelling, are retained. Application images illustrate settings. Inquiry creates a local email draft; nothing is sent by the website. Local preview only. Preserve editable Blender and reproduction source; clean disposable task files after validation.

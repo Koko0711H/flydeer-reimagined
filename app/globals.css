@@ -20,27 +20,27 @@
   --radius-lg: 1.5rem;
 }
 :root {
-  --background: #f5f7f9;
-  --foreground: #092b48;
-  --primary: #075ca7;
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+  --primary: #c70018;
   --primary-foreground: #fff;
-  --border: #d7e0e8;
-  --ring: #2c81c5;
+  --border: #dedee1;
+  --ring: #ec0016;
   --card: #fff;
-  --card-foreground: #092b48;
+  --card-foreground: #1d1d1f;
   --popover: #fff;
-  --popover-foreground: #092b48;
-  --muted: #eaf0f5;
-  --muted-foreground: #526a80;
-  --accent: #e6f0fa;
-  --accent-foreground: #092b48;
+  --popover-foreground: #1d1d1f;
+  --muted: #f5f5f8;
+  --muted-foreground: #626268;
+  --accent: #fff0f2;
+  --accent-foreground: #1d1d1f;
   --destructive: #c63842;
   --font-body: 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-utility: SFMono-Regular, Consolas, monospace;
-  --navy: #061f36;
-  --blue: #075ca7;
-  --ice: #e8f1f8;
-  --red: #ed3e47;
+  --navy: #1d1d1f;
+  --blue: #c70018;
+  --ice: #f5f5f8;
+  --red: #ec0016;
   --radius: 1.5rem;
 }
 * {
@@ -96,7 +96,7 @@ h3 {
   letter-spacing: -0.04em;
 }
 ::selection {
-  background: #c5e3ff;
+  background: #ffd7dd;
   color: var(--navy);
 }
 a:focus-visible,
@@ -104,7 +104,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid #4faeff;
+  outline: 3px solid #c70018;
   outline-offset: 5px;
 }
 .wrap {
@@ -131,11 +131,11 @@ select:focus-visible {
   margin-top: 24px;
 }
 .section-heading h2 span {
-  color: #7792a8;
+  color: #8e8e91;
 }
 .section-heading > p {
   max-width: 350px;
-  color: #526a80;
+  color: #626268;
   font-size: 16px;
 }
 .pill {
@@ -154,7 +154,7 @@ select:focus-visible {
 }
 .pill.light {
   background: #fff;
-  color: #082e4c;
+  color: #28282b;
 }
 .pill.primary {
   background: var(--blue);
@@ -176,7 +176,7 @@ select:focus-visible {
   align-items: center;
   gap: 26px;
   font-size: 14px;
-  border-bottom: 1px solid #9fb2c3;
+  border-bottom: 1px solid #afafb2;
   padding: 12px 0;
   white-space: nowrap;
 }
@@ -186,7 +186,7 @@ select:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #b9c8d4;
+  border: 1px solid #c6c6c9;
   border-radius: 50%;
   background: transparent;
   transition:
@@ -212,7 +212,7 @@ select:focus-visible {
 }
 .fine-print {
   font-size: 12px !important;
-  color: #697f91 !important;
+  color: #7c7c7f !important;
 }
 .site-header {
   position: fixed;
@@ -226,14 +226,14 @@ select:focus-visible {
   gap: 28px;
   padding: 22px 4vw;
   color: #fff;
-  background: #061f36ed;
+  background: #1d1d1fed;
   backdrop-filter: blur(18px);
   border-bottom: 1px solid #ffffff16;
 }
 .brand {
   width: 140px;
   height: auto;
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 .site-header nav {
   display: flex;
@@ -329,8 +329,8 @@ select:focus-visible {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, #021324cc, #02132430 72%),
-    linear-gradient(0deg, #021324ad, transparent 40%);
+    linear-gradient(90deg, #111114cc, #11111430 72%),
+    linear-gradient(0deg, #111114ad, transparent 40%);
 }
 .hero-copy {
   position: relative;
@@ -347,7 +347,7 @@ select:focus-visible {
 .hero-description {
   font-size: 17px;
   line-height: 1.9;
-  color: #d6e2ee;
+  color: #e0e0e3;
   margin-bottom: 32px;
 }
 .hero-bottom {
@@ -398,7 +398,7 @@ select:focus-visible {
   z-index: 2;
   color: white;
   border-color: #ffffff60;
-  background: #061f3655;
+  background: #1d1d1f55;
 }
 .why-section {
   display: grid;
@@ -411,7 +411,7 @@ select:focus-visible {
   margin-top: 25px;
 }
 .why-statement h2 span {
-  color: #7893a9;
+  color: #8f8f92;
 }
 .why-points article {
   padding: 24px 0;
@@ -426,7 +426,7 @@ select:focus-visible {
   margin-bottom: 13px;
 }
 .why-points p {
-  color: #526a80;
+  color: #626268;
   font-size: 15px;
   max-width: 450px;
 }
@@ -447,7 +447,7 @@ select:focus-visible {
   min-height: 600px;
   border-radius: 26px;
   overflow: hidden;
-  background: #dce7ef;
+  background: #e5e5e8;
 }
 .industry-image img {
   width: 100%;
@@ -468,7 +468,7 @@ select:focus-visible {
   content: '';
   position: absolute;
   inset: 65% 0 0;
-  background: linear-gradient(transparent, #061f3699);
+  background: linear-gradient(transparent, #1d1d1f99);
   pointer-events: none;
 }
 .industry-image > span {
@@ -497,7 +497,7 @@ select:focus-visible {
   color: var(--blue);
 }
 .industry-item p {
-  color: #647c8e;
+  color: #78787b;
   font-size: 14px;
 }
 .industry-item a {
@@ -546,12 +546,12 @@ select:focus-visible {
 }
 .company-copy > p:not(.eyebrow) {
   font-size: 15px;
-  color: #b9ccd9;
+  color: #c9c9cc;
   max-width: 450px;
   margin-bottom: 35px;
 }
 .case-section {
-  background: #eef3f7;
+  background: #f2f2f5;
   padding: 115px 0 70px;
   overflow: hidden;
 }
@@ -578,7 +578,7 @@ select:focus-visible {
   overflow: hidden;
   color: #fff;
   text-align: left;
-  box-shadow: 0 25px 40px -24px #062b4c66;
+  box-shadow: 0 25px 40px -24px #25252866;
   will-change: transform;
   transform-origin: center center;
 }
@@ -594,7 +594,7 @@ select:focus-visible {
 .case-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, #041b32e0, transparent 70%);
+  background: linear-gradient(0deg, #18181be0, transparent 70%);
 }
 .case-caption {
   position: absolute;
@@ -608,7 +608,7 @@ select:focus-visible {
   letter-spacing: 0.08em;
   font-family: var(--font-utility);
   margin-bottom: 13px;
-  color: #d2e1ec;
+  color: #dfdfe2;
 }
 .case-caption strong {
   display: block;
@@ -631,7 +631,7 @@ select:focus-visible {
 }
 .gallery-hint {
   font-size: 12px;
-  color: #617b8f;
+  color: #77777a;
 }
 .gallery-dots {
   display: flex;
@@ -649,7 +649,7 @@ select:focus-visible {
   content: '';
   position: absolute;
   inset: 11px 5px;
-  background: #b7c7d2;
+  background: #c4c4c7;
   border-radius: 10px;
 }
 .gallery-dots button[aria-pressed='true']::after {
@@ -671,7 +671,7 @@ select:focus-visible {
   margin-bottom: 40px;
 }
 .filter-bar button {
-  border: 1px solid #becdd8;
+  border: 1px solid #cbcbce;
   border-radius: 99px;
   background: transparent;
   padding: 10px 20px;
@@ -740,7 +740,7 @@ select:focus-visible {
   gap: 80px;
   padding: 115px 7%;
   color: #fff;
-  background: #10242f;
+  background: #212124;
 }
 .contact-band h2 {
   font-size: clamp(45px, 5.9vw, 88px);
@@ -751,7 +751,7 @@ select:focus-visible {
   max-width: 440px;
 }
 .contact-band-info > p {
-  color: #bdccd6;
+  color: #cacacd;
   font-size: 16px;
   margin-bottom: 28px;
 }
@@ -762,8 +762,8 @@ select:focus-visible {
   margin-top: 24px;
 }
 .site-footer {
-  background: #061b2d;
-  color: #c4d1dc;
+  background: #18181b;
+  color: #cfcfd2;
   padding: 70px 7% 20px;
 }
 .footer-main {
@@ -794,7 +794,7 @@ select:focus-visible {
   align-items: center;
 }
 .footer-contact p {
-  color: #7e98ac;
+  color: #949497;
   font-size: 12px;
 }
 .footer-bottom {
@@ -804,7 +804,7 @@ select:focus-visible {
   justify-content: space-between;
   gap: 25px;
   font-size: 10px;
-  color: #7f98ac;
+  color: #949497;
 }
 .footer-bottom a {
   display: flex;
@@ -821,7 +821,7 @@ select:focus-visible {
 }
 .page-hero > p:last-child {
   max-width: 620px;
-  color: #5c7487;
+  color: #707073;
   font-size: 16px;
 }
 .page-hero.dark {
@@ -829,7 +829,7 @@ select:focus-visible {
   color: #fff;
 }
 .page-hero.dark > p:last-child {
-  color: #b7cad8;
+  color: #c7c7ca;
 }
 .product-catalog {
   padding-block: 85px;
@@ -839,7 +839,7 @@ select:focus-visible {
 }
 .catalog-card {
   overflow: hidden;
-  border: 1px solid #d6e1e9;
+  border: 1px solid #dfdfe2;
   border-radius: 25px;
   background: var(--ice);
 }
@@ -847,7 +847,7 @@ select:focus-visible {
   position: relative;
   height: 340px;
   overflow: hidden;
-  background: #dfeaf2;
+  background: #e8e8eb;
 }
 .catalog-film video {
   height: 100%;
@@ -870,7 +870,7 @@ select:focus-visible {
 }
 .catalog-card-copy > p:not(.eyebrow):not(.range) {
   font-size: 14px;
-  color: #5a7388;
+  color: #6f6f72;
 }
 .catalog-card-copy > a {
   margin-top: 22px;
@@ -907,7 +907,7 @@ select:focus-visible {
   mix-blend-mode: multiply;
 }
 .detail-copy > p:not(.eyebrow):not(.range) {
-  color: #5b7488;
+  color: #707073;
   margin-bottom: 25px;
 }
 .detail-actions {
@@ -923,7 +923,7 @@ select:focus-visible {
 }
 .feature-row article {
   padding: 24px 0;
-  border-top: 1px solid #bbccdb;
+  border-top: 1px solid #c9c9cc;
 }
 .feature-row h2 {
   font-size: 23px;
@@ -931,7 +931,7 @@ select:focus-visible {
 }
 .spec-note {
   padding: 40px;
-  background: #e8f0f6;
+  background: #efeff2;
   border-radius: 24px;
   margin-bottom: 85px;
 }
@@ -941,7 +941,7 @@ select:focus-visible {
 }
 .spec-note p {
   font-size: 15px;
-  color: #567084;
+  color: #6c6c6f;
   max-width: 850px;
 }
 .about-intro {
@@ -954,7 +954,7 @@ select:focus-visible {
   font-size: clamp(36px, 4.5vw, 64px);
 }
 .about-intro p {
-  color: #5d7588;
+  color: #717174;
   margin-bottom: 22px;
 }
 .about-film {
@@ -971,7 +971,7 @@ select:focus-visible {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, #061f3670, transparent);
+  background: linear-gradient(0deg, #1d1d1f70, transparent);
 }
 .about-film .film-control {
   bottom: 35px;
@@ -993,7 +993,7 @@ select:focus-visible {
 }
 .story-top > span:last-child {
   font-size: 10px;
-  color: #a8bdcd;
+  color: #bababd;
 }
 .story-track {
   display: flex;
@@ -1014,11 +1014,11 @@ select:focus-visible {
 }
 .story-copy > p:not(.eyebrow) {
   font-size: 15px;
-  color: #b0c5d4;
+  color: #c2c2c5;
   max-width: 410px;
 }
 .story-copy .eyebrow > span {
-  color: #80b9e3;
+  color: #b0b0b3;
 }
 .story-image {
   height: 470px;
@@ -1035,11 +1035,11 @@ select:focus-visible {
   gap: 22px;
   margin-top: 40px;
   font-size: 11px;
-  color: #7b96aa;
+  color: #929295;
 }
 .story-steps span {
   padding-top: 12px;
-  border-top: 2px solid #28475c;
+  border-top: 2px solid #424245;
 }
 .story-steps .active {
   color: #fff;
@@ -1051,11 +1051,11 @@ select:focus-visible {
   left: 7%;
   right: 7%;
   height: 2px;
-  background: #234157;
+  background: #3c3c3f;
 }
 .story-progress > div {
   height: 100%;
-  background: #80b9e3;
+  background: #b0b0b3;
   transform: scaleX(0);
   transform-origin: left;
 }
@@ -1074,11 +1074,11 @@ select:focus-visible {
 }
 .location-row p {
   font-size: 14px;
-  color: #5e768a;
+  color: #727275;
 }
 .showroom {
   padding: 150px 7% 90px;
-  background: #e8f1f8;
+  background: #f5f5f8;
 }
 .showroom-head {
   display: flex;
@@ -1094,7 +1094,7 @@ select:focus-visible {
 .showroom-head > p {
   max-width: 400px;
   font-size: 14px;
-  color: #5b7589;
+  color: #717174;
 }
 .showroom-layout {
   display: grid;
@@ -1112,7 +1112,7 @@ select:focus-visible {
   text-align: left;
   padding: 21px 20px;
   border-radius: 16px;
-  color: #6b8194;
+  color: #7e7e81;
   font-size: 15px;
 }
 .model-selector button strong {
@@ -1129,10 +1129,10 @@ select:focus-visible {
 .model-stage {
   position: relative;
   height: 570px;
-  border: 1px solid #c3d5e3;
+  border: 1px solid #d2d2d5;
   border-radius: 25px;
   overflow: hidden;
-  background: #dbe8f1;
+  background: #e6e6e9;
 }
 .model-stage > video {
   width: 100%;
@@ -1149,11 +1149,11 @@ select:focus-visible {
   justify-content: flex-end;
   padding: 30px;
   gap: 15px;
-  background: linear-gradient(transparent 60%, #dbe8f1);
+  background: linear-gradient(transparent 60%, #e6e6e9);
 }
 .model-launch p {
   font-size: 12px;
-  color: #5a7488;
+  color: #707073;
 }
 .model-canvas {
   position: absolute;
@@ -1171,7 +1171,7 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #dbe8f1;
+  background: #e6e6e9;
   pointer-events: none;
   font-size: 14px;
 }
@@ -1187,13 +1187,13 @@ select:focus-visible {
 }
 .model-controls > span {
   font-size: 11px;
-  color: #45677f;
+  color: #616164;
 }
 .model-controls button {
   padding: 8px 16px;
   border-radius: 99px;
   background: #fff;
-  border: 1px solid #bad0df;
+  border: 1px solid #cccccf;
   font-size: 12px;
 }
 .model-error {
@@ -1206,7 +1206,7 @@ select:focus-visible {
   gap: 20px;
   padding: 40px;
   text-align: center;
-  background: #dbe8f1;
+  background: #e6e6e9;
 }
 .showroom-foot {
   display: flex;
@@ -1214,7 +1214,7 @@ select:focus-visible {
   align-items: center;
   margin-top: 22px;
   font-size: 12px;
-  color: #58748a;
+  color: #707073;
 }
 .service-content {
   padding-block: 85px;
@@ -1239,13 +1239,13 @@ select:focus-visible {
 .contact-meta {
   margin: 30px 0 35px;
   font-size: 15px;
-  color: #5c7689;
+  color: #727275;
 }
 .contact-meta p {
   margin-bottom: 10px;
 }
 .inquiry-form {
-  background: #e8f0f6;
+  background: #efeff2;
   border-radius: 25px;
   padding: 40px;
 }
@@ -1255,7 +1255,7 @@ select:focus-visible {
 }
 .inquiry-form > p {
   font-size: 13px;
-  color: #5c7689;
+  color: #727275;
   margin-bottom: 25px;
 }
 .inquiry-form label {
@@ -1269,10 +1269,10 @@ select:focus-visible {
   display: block;
   width: 100%;
   margin-top: 8px;
-  border: 1px solid #b8ccdc;
+  border: 1px solid #c9c9cc;
   border-radius: 10px;
   padding: 12px 14px;
-  background: #f8fbfd;
+  background: #fbfbfe;
   color: var(--navy);
   font-size: 14px;
 }
@@ -1283,7 +1283,7 @@ select:focus-visible {
 .inquiry-result {
   margin-top: 20px;
   font-size: 13px;
-  color: #45677f;
+  color: #616164;
 }
 .inquiry-result a {
   text-decoration: underline;
@@ -1304,7 +1304,7 @@ select:focus-visible {
 }
 .faq [data-slot='accordion-content'] {
   font-size: 15px;
-  color: #536f84;
+  color: #6b6b6e;
   line-height: 1.8;
   padding-bottom: 12px;
 }
@@ -1325,7 +1325,7 @@ select:focus-visible {
   margin-bottom: 22px;
 }
 .empty-news p {
-  color: #5c7689;
+  color: #727275;
   margin-bottom: 28px;
 }
 @media (min-width: 1000px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -1963,7 +1963,7 @@ select:focus-visible {
   right: 18px;
   color: var(--navy);
   background: #ffffffcc;
-  border-color: #b7ccd9;
+  border-color: #c8c8cb;
 }
 .detail-body > div:first-child {
   position: relative;

@@ -136,7 +136,7 @@ export function AboutPage() {
   return (
     <main id="main">
       <section className="page-hero dark">
-        <p className="eyebrow">WE ARE FLYDEER</p>
+        <p className="eyebrow">WE ARE FRS POWER</p>
         <h1>
           {lang === 'zh' ? (
             <>
@@ -177,8 +177,8 @@ export function AboutPage() {
         <div data-reveal>
           <p>
             {lang === 'zh'
-              ? '深柴能源专注于发电机组及配电解决方案，产品涵盖静音型、开架型、移动拖车机组与高压配电系统。'
-              : 'FlyDeer focuses on generator sets and power distribution solutions, spanning enclosed, open, trailer-mounted and high-voltage systems.'}
+              ? '福瑞斯专注于发电机组及配电解决方案，产品涵盖静音型、开架型、移动拖车机组与高压配电系统。'
+              : 'FRS POWER focuses on generator sets and power distribution solutions, spanning enclosed, open, trailer-mounted and high-voltage systems.'}
           </p>
           <p>
             {lang === 'zh'
@@ -223,7 +223,7 @@ export function NewsPage() {
   return (
     <main id="main">
       <section className="page-hero">
-        <p className="eyebrow">INSIDE FLYDEER</p>
+        <p className="eyebrow">INSIDE FRS POWER</p>
         <h1>{lang === 'zh' ? '制造现场，持续发生。' : 'Inside the work.'}</h1>
         <p>
           {lang === 'zh'
@@ -251,7 +251,7 @@ export function NewsPage() {
               : 'There are no published news articles yet. Explore our manufacturing and delivery process, or contact the team for product information.'}
           </p>
           <a className="pill primary" href={`/about?lang=${lang}`}>
-            {lang === 'zh' ? '走进深柴' : 'Meet FlyDeer'}
+            {lang === 'zh' ? '走进福瑞斯' : 'Meet FRS POWER'}
             <ArrowUpRight size={18} />
           </a>
         </div>
@@ -341,7 +341,7 @@ export function ServicePage() {
       </section>
       <section className="service-content wrap" id="contact">
         <div className="service-contact">
-          <h2>{lang === 'zh' ? '联系深柴' : 'Contact FlyDeer'}</h2>
+          <h2>{lang === 'zh' ? '联系福瑞斯' : 'Contact FRS POWER'}</h2>
           <a className="large-phone" href={contact.tel}>
             {contact.phone}
           </a>

@@ -212,7 +212,7 @@ export function KineticCases({
       })
       .catch((error: unknown) =>
         console.warn(
-          '[FlyDeer] Gallery motion unavailable; native gallery retained.',
+          '[FRS POWER] Gallery motion unavailable; native gallery retained.',
           error,
         ),
       );

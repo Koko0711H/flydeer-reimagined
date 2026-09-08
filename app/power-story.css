@@ -1,0 +1,1119 @@
+.power-story {
+  position: relative;
+  isolation: isolate;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  --story-gutter: 7vw;
+  --story-header: 80px;
+}
+.power-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  margin-bottom: -100svh;
+  pointer-events: none;
+  z-index: 1;
+  overflow: clip;
+}
+.power-stage-world {
+  position: absolute;
+  inset: 0;
+  background: #f5f5f7;
+}
+.power-actor {
+  position: absolute;
+  left: 50%;
+  top: 65%;
+  width: 80vw;
+  aspect-ratio: 1.4;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.power-actor img,
+.power-actor canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.power-actor canvas {
+  opacity: 0;
+}
+.power-actor img {
+  mix-blend-mode: multiply;
+}
+.power-factory-portal,
+.power-site-portal {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  overflow: clip;
+}
+.power-factory-portal img,
+.power-site-portal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.power-factory-portal:after,
+.power-site-portal:after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0b111566;
+}
+.power-road {
+  position: absolute;
+  top: 110%;
+  inset-inline: 0;
+  height: 120%;
+  background: #18191b;
+}
+.power-chapter {
+  position: relative;
+  z-index: 2;
+  min-height: 150svh;
+  scroll-margin-top: 0;
+}
+.power-shot {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 680px;
+  padding: 120px var(--story-gutter) 60px;
+  box-sizing: border-box;
+}
+.power-shot h1,
+.power-shot h2,
+.power-shot h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.13;
+  margin: 0;
+  text-wrap: balance;
+}
+.power-shot h1 {
+  font-size: clamp(48px, 5.8vw, 88px);
+}
+.power-shot h2 {
+  font-size: clamp(36px, 4.1vw, 64px);
+}
+.power-shot em {
+  font-style: normal;
+  color: #c70018;
+}
+.power-shot p {
+  font-size: 16px;
+  line-height: 1.75;
+}
+.power-shot .power-caption {
+  font-size: 14px;
+  margin: 0 0 20px;
+  line-height: 1.4;
+}
+.power-opening {
+  min-height: 132svh;
+}
+.opening-copy {
+  text-align: center;
+}
+.power-signature {
+  font-size: 14px !important;
+  letter-spacing: 0.12em;
+  margin: 0 0 22px;
+}
+.power-signature span {
+  margin-left: 16px;
+  letter-spacing: 0.08em;
+  color: #626268;
+}
+.opening-copy > p:not(.power-signature) {
+  margin: 22px 0 12px;
+  color: #626268;
+}
+.power-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 15px;
+  color: #c70018;
+  text-decoration: none;
+}
+.power-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.power-link svg {
+  flex-shrink: 0;
+}
+.power-static-machine {
+  display: none;
+}
+.power-shot-foot {
+  position: absolute;
+  bottom: 32px;
+  left: var(--story-gutter);
+  right: var(--story-gutter);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #626268;
+}
+.power-shot-foot a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+}
+.power-copy {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-44%);
+  width: 38%;
+  max-width: 560px;
+}
+.power-copy-left {
+  left: var(--story-gutter);
+}
+.power-copy-right {
+  right: var(--story-gutter);
+}
+.power-copy > p:not(.power-caption) {
+  color: #626268;
+  margin: 25px 0;
+  max-width: 44ch;
+}
+.power-product-list {
+  margin: 25px 0 18px;
+}
+.power-product-list button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  min-height: 49px;
+  border: 0;
+  border-bottom: 1px solid #c7c7ce;
+  background: transparent;
+  padding: 8px 0;
+  color: #55555d;
+  text-align: left;
+  font-size: 15px;
+  cursor: pointer;
+}
+.power-product-list button small {
+  font-size: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.power-product-list button[aria-pressed='true'] {
+  color: #c70018;
+  border-bottom-color: #c70018;
+}
+.power-product-detail > p {
+  font-size: 15px;
+  min-height: 3.5em;
+  color: #626268;
+}
+.power-links {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.power-object-label {
+  position: absolute;
+  bottom: 18%;
+  right: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  color: #626268;
+}
+.power-making {
+  min-height: 165svh;
+}
+.power-making .power-copy {
+  color: #fff;
+}
+.power-making .power-copy > p:not(.power-caption) {
+  color: #efeff2;
+}
+.power-making .power-link {
+  color: #fff;
+}
+.power-process {
+  display: flex;
+  gap: 14px;
+  margin: 30px 0 20px;
+}
+.power-process a {
+  flex: 1;
+  font-size: 14px;
+}
+.power-process img {
+  width: 100%;
+  aspect-ratio: 1.5;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+.power-details {
+  margin: 26px 0;
+}
+.power-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 13px 0;
+  border-top: 1px solid #c7c7ce;
+  font-size: 15px;
+}
+.power-details dd {
+  margin: 0;
+  color: #626268;
+}
+.power-loading {
+  min-height: 200svh;
+}
+.loading-copy {
+  text-align: center;
+}
+.power-loading-note {
+  position: absolute;
+  bottom: 12%;
+  left: var(--story-gutter);
+  width: 330px;
+  max-width: 70%;
+  color: #fff;
+}
+.power-industries {
+  min-height: 165svh;
+  color: #fff;
+}
+.power-industry-heading {
+  position: absolute;
+  left: var(--story-gutter);
+  top: 58%;
+  width: 43%;
+}
+.power-industry-heading h2 {
+  font-size: clamp(34px, 3.5vw, 54px);
+}
+.power-industry-heading em {
+  color: #b8b9bf;
+}
+.power-industry-picker {
+  position: absolute;
+  right: var(--story-gutter);
+  top: 55%;
+  width: 35%;
+  max-width: 480px;
+}
+.power-industry-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+.power-industry-nav button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border: 0;
+  border-bottom: 1px solid #55555d;
+  background: none;
+  color: #b8b9bf;
+  min-height: 50px;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+}
+.power-industry-nav button[aria-pressed='true'] {
+  color: #fff;
+  border-color: #fff;
+}
+.power-industry-picker > p {
+  color: #c9c9d0;
+  font-size: 15px;
+  min-height: 3.5em;
+  margin: 20px 0 8px;
+}
+.power-industry-picker .power-link {
+  color: #fff;
+}
+.power-applications {
+  min-height: 170svh;
+  color: #fff;
+}
+.power-app-heading {
+  position: absolute;
+  top: 18%;
+  left: var(--story-gutter);
+}
+.power-app-heading h2 {
+  font-size: clamp(42px, 4.5vw, 72px);
+}
+.power-case-copy {
+  position: absolute;
+  bottom: 25%;
+  left: var(--story-gutter);
+  max-width: 480px;
+  width: 45%;
+}
+.power-case-copy h3 {
+  font-size: 30px;
+}
+.power-case-copy p {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.power-case-copy .power-caption {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.power-case-copy .power-link {
+  color: #fff;
+}
+.power-case-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: absolute;
+  right: var(--story-gutter);
+  bottom: 27%;
+  font-size: 14px;
+}
+.power-case-controls button {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #fff7;
+  border-radius: 50%;
+  color: #fff;
+  background: #17191b55;
+  cursor: pointer;
+}
+.power-case-controls button:hover {
+  background: #c70018;
+}
+.power-case-strip {
+  position: absolute;
+  bottom: 8%;
+  left: var(--story-gutter);
+  display: flex;
+  gap: 10px;
+  width: 71%;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  scrollbar-width: thin;
+}
+.power-case-strip button {
+  width: 96px;
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  opacity: 0.6;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+}
+.power-case-strip button[aria-pressed='true'] {
+  opacity: 1;
+}
+.power-case-strip img {
+  width: 96px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid transparent;
+  margin-bottom: 6px;
+}
+.power-case-strip button[aria-pressed='true'] img {
+  border-color: #fff;
+}
+.power-all-cases {
+  position: absolute;
+  bottom: 9%;
+  right: var(--story-gutter);
+  color: #fff;
+}
+.power-contact {
+  min-height: 140svh;
+}
+.power-contact-copy {
+  position: absolute;
+  top: 22%;
+  left: var(--story-gutter);
+  max-width: 720px;
+  width: 70%;
+}
+.power-contact-copy h2 {
+  font-size: clamp(46px, 5.3vw, 82px);
+}
+.power-contact-copy > p:not(.power-caption) {
+  max-width: 440px;
+  color: #626268;
+  margin: 28px 0;
+}
+.power-contact-phone {
+  display: block;
+  font-size: 19px;
+  margin-top: 24px;
+  width: max-content;
+}
+.power-endmark {
+  position: absolute;
+  bottom: 1%;
+  left: var(--story-gutter);
+  font-size: clamp(70px, 14vw, 230px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+  color: #c70018;
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .power-story {
+    --story-gutter: 7vw;
+    --story-header: 70px;
+  }
+  .power-shot {
+    padding-top: 110px;
+    min-height: 640px;
+  }
+  .power-opening {
+    min-height: 125svh;
+  }
+  .power-shot h1 {
+    font-size: clamp(38px, 9.5vw, 64px);
+  }
+  .power-shot h2 {
+    font-size: clamp(30px, 7.8vw, 48px);
+  }
+  .opening-copy > p:not(.power-signature) {
+    max-width: 310px;
+    margin: 19px auto 5px;
+    font-size: 14px;
+  }
+  .power-signature {
+    font-size: 12px !important;
+    margin-bottom: 20px;
+  }
+  .power-actor {
+    width: 145vw;
+    top: 66%;
+  }
+  .power-shot-foot > span {
+    display: none;
+  }
+  .power-shot-foot {
+    justify-content: center;
+    bottom: 22px;
+  }
+  .power-copy {
+    width: 86%;
+    max-width: none;
+    top: 115px;
+    left: 7vw;
+    right: auto;
+    transform: none;
+  }
+  .power-copy > p:not(.power-caption) {
+    font-size: 14px;
+    margin: 16px 0;
+  }
+  .power-shot .power-caption {
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+  .power-products .power-copy {
+    top: 105px;
+  }
+  .power-products h2 {
+    font-size: 31px;
+  }
+  .power-product-list {
+    margin: 18px 0 12px;
+    width: 100%;
+  }
+  .power-product-list button {
+    min-height: 41px;
+    font-size: 14px;
+  }
+  .power-product-list button small {
+    font-size: 12px;
+  }
+  .power-product-detail > p {
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 100%;
+    min-height: 3.2em;
+    margin: 10px 0 2px;
+  }
+  .power-links {
+    gap: 26px;
+  }
+  .power-link {
+    font-size: 14px;
+  }
+  .power-object-label {
+    display: none;
+  }
+  .power-making .power-copy {
+    top: auto;
+    bottom: 9%;
+  }
+  .power-making h2 {
+    font-size: 34px;
+  }
+  .power-making .power-copy > p:not(.power-caption) {
+    max-width: 35ch;
+  }
+  .power-process {
+    margin: 18px 0 8px;
+    max-width: 320px;
+  }
+  .power-process img {
+    height: 56px;
+    object-fit: cover;
+  }
+  .power-process a {
+    font-size: 12px;
+  }
+  .power-detail .power-copy {
+    top: 108px;
+  }
+  .power-detail h2 {
+    font-size: 32px;
+  }
+  .power-details {
+    margin: 14px 0 0;
+  }
+  .power-details div {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  .loading-copy h2 {
+    font-size: 37px;
+  }
+  .power-loading-note {
+    bottom: 12%;
+    font-size: 14px !important;
+    max-width: 280px;
+  }
+  .power-industry-heading {
+    top: 49%;
+    width: 86%;
+  }
+  .power-industry-heading h2 {
+    font-size: 34px;
+  }
+  .power-industry-picker {
+    top: auto;
+    bottom: 8%;
+    width: 86%;
+    left: 7vw;
+  }
+  .power-industry-nav {
+    gap: 0 24px;
+  }
+  .power-industry-nav button {
+    font-size: 14px;
+    padding: 8px 0;
+    min-height: 42px;
+  }
+  .power-industry-picker > p {
+    font-size: 13px;
+    margin: 12px 0 0;
+    max-width: 35ch;
+    min-height: 3em;
+  }
+  .power-app-heading {
+    top: 15%;
+  }
+  .power-app-heading h2 {
+    font-size: 42px;
+  }
+  .power-case-copy {
+    width: 86%;
+    bottom: 29%;
+    max-width: 35ch;
+  }
+  .power-case-copy h3 {
+    font-size: 26px;
+  }
+  .power-case-copy p {
+    font-size: 14px;
+  }
+  .power-case-controls {
+    bottom: 20%;
+    right: 7vw;
+    gap: 14px;
+  }
+  .power-case-controls button {
+    width: 42px;
+    height: 42px;
+  }
+  .power-case-strip {
+    bottom: 6%;
+    width: 86%;
+  }
+  .power-case-strip img {
+    width: 82px;
+    height: 50px;
+  }
+  .power-case-strip button {
+    width: 82px;
+  }
+  .power-all-cases {
+    left: 7vw;
+    right: auto;
+    bottom: 20%;
+    font-size: 13px;
+  }
+  .power-contact-copy {
+    top: 20%;
+    width: 86%;
+  }
+  .power-contact-copy h2 {
+    font-size: 44px;
+  }
+  .power-contact-copy > p:not(.power-caption) {
+    font-size: 15px;
+    max-width: 33ch;
+  }
+  .power-endmark {
+    font-size: 15vw;
+    bottom: 12%;
+    left: 6vw;
+  }
+}
+@media (prefers-reduced-motion: reduce),
+  (max-height: 620px),
+  (max-width: 760px) and (max-height: 740px) {
+  .power-stage {
+    display: none;
+  }
+  .power-chapter {
+    min-height: 0 !important;
+  }
+  .power-shot {
+    position: relative;
+    height: auto;
+    min-height: 0;
+    padding: 90px var(--story-gutter);
+  }
+  .power-copy,
+  .power-industry-heading,
+  .power-industry-picker,
+  .power-app-heading,
+  .power-case-copy,
+  .power-contact-copy,
+  .power-object-label {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    max-width: 720px;
+  }
+  .power-shot-foot,
+  .power-object-label {
+    display: none;
+  }
+  .power-static-machine {
+    display: block;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply;
+  }
+  .power-products,
+  .power-detail,
+  .power-contact {
+    background: #f5f5f7;
+  }
+  .power-making {
+    background: #30343a url('/media/company/factory-assembly.webp') center/cover;
+  }
+  .power-making .power-shot {
+    background: #1119;
+  }
+  .power-loading {
+    background: #18191b;
+    color: #fff;
+  }
+  .power-loading em {
+    color: #e4e4e8;
+  }
+  .power-loading-note {
+    position: relative;
+    inset: auto;
+    margin: 30px auto 0;
+    text-align: center;
+  }
+  .power-industries {
+    background: #18191b;
+  }
+  .power-industry-picker {
+    margin-top: 32px;
+  }
+  .power-applications {
+    background: #242629;
+  }
+  .power-case-copy {
+    margin-top: 40px;
+  }
+  .power-case-controls,
+  .power-case-strip,
+  .power-all-cases {
+    position: relative;
+    inset: auto;
+    margin-top: 25px;
+  }
+  .power-case-strip {
+    width: 100%;
+  }
+  .power-endmark {
+    position: relative;
+    inset: auto;
+    margin-top: 80px;
+    font-size: 14vw;
+  }
+  .power-contact-copy h2 {
+    font-size: clamp(38px, 5vw, 70px);
+  }
+}
+.power-stage[data-ready='true'] .power-actor canvas {
+  opacity: 1;
+}
+.power-stage[data-ready='true'] .power-actor > img {
+  visibility: hidden;
+}
+.power-shot {
+  opacity: var(--copy-opacity, 1);
+}
+.power-shot:focus-within {
+  opacity: 1;
+}
+.power-road {
+  top: 0;
+  transform: translateY(110svh);
+  will-change: transform;
+}
+.power-factory-portal,
+.power-site-portal {
+  will-change: clip-path, transform;
+  transform-origin: center;
+}
+.power-actor img {
+  mix-blend-mode: normal;
+}
+.power-anchor {
+  position: absolute;
+  inset: 0 auto auto 0;
+}
+@media (min-width: 761px) {
+  .power-opening .power-shot {
+    padding-top: max(145px, 22svh);
+  }
+  .opening-copy {
+    text-align: left;
+    max-width: 52%;
+  }
+  .opening-copy h1 {
+    font-size: clamp(50px, 5vw, 76px);
+  }
+  .opening-copy > p:not(.power-signature) {
+    max-width: 340px;
+    margin: 26px 0 12px;
+  }
+  .power-opening .power-shot-foot {
+    bottom: 24px;
+  }
+}
+@media (min-width: 761px) and (max-height: 800px) {
+  .power-opening .power-shot {
+    padding-top: 145px;
+  }
+  .opening-copy h1 {
+    font-size: clamp(48px, 4.8vw, 64px);
+  }
+}
+.power-video-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.power-product-detail > .power-video-button {
+  min-height: 30px;
+  font-size: 14px;
+}
+.power-product-dialog {
+  width: min(920px, 92vw);
+  max-width: 920px !important;
+  padding: 0;
+  overflow: auto;
+  max-height: 90svh;
+  border: 0;
+  background: #f5f5f7;
+}
+.power-product-dialog .film {
+  height: 52svh;
+  min-height: 200px;
+}
+.power-product-dialog video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.power-product-dialog .dialog-copy {
+  padding: 24px 36px 30px;
+}
+.power-road > img {
+  width: 100%;
+  height: 70svh;
+  object-fit: cover;
+  opacity: 0.16;
+  filter: saturate(0.4);
+}
+.power-case-copy > .power-link {
+  margin-right: 20px;
+}
+
+/* Content remains a complete normal document without the animation runtime. */
+.power-story:not([data-enhanced]) .power-stage {
+  display: none;
+}
+.power-story:not([data-enhanced]) .power-chapter {
+  min-height: 0 !important;
+}
+.power-story:not([data-enhanced]) .power-shot {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  padding: 90px var(--story-gutter);
+}
+.power-story:not([data-enhanced]) .power-copy,
+.power-story:not([data-enhanced]) .power-industry-heading,
+.power-story:not([data-enhanced]) .power-industry-picker,
+.power-story:not([data-enhanced]) .power-app-heading,
+.power-story:not([data-enhanced]) .power-case-copy,
+.power-story:not([data-enhanced]) .power-contact-copy,
+.power-story:not([data-enhanced]) .power-object-label {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  max-width: 720px;
+}
+.power-story:not([data-enhanced]) .power-shot-foot,
+.power-story:not([data-enhanced]) .power-object-label {
+  display: none;
+}
+.power-story:not([data-enhanced]) .power-static-machine {
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+.power-story:not([data-enhanced]) .power-products,
+.power-story:not([data-enhanced]) .power-detail,
+.power-story:not([data-enhanced]) .power-contact {
+  background: #f5f5f7;
+}
+.power-story:not([data-enhanced]) .power-making {
+  background: #30343a url('/media/company/factory-assembly.webp') center/cover;
+}
+.power-story:not([data-enhanced]) .power-making .power-shot {
+  background: #1119;
+}
+.power-story:not([data-enhanced]) .power-loading {
+  background: #18191b;
+  color: #fff;
+}
+.power-story:not([data-enhanced]) .power-loading em {
+  color: #e4e4e8;
+}
+.power-story:not([data-enhanced]) .power-loading-note {
+  position: relative;
+  inset: auto;
+  margin: 30px auto 0;
+  text-align: center;
+}
+.power-story:not([data-enhanced]) .power-industries {
+  background: #18191b;
+}
+.power-story:not([data-enhanced]) .power-industry-picker {
+  margin-top: 32px;
+}
+.power-story:not([data-enhanced]) .power-applications {
+  background: #242629;
+}
+.power-story:not([data-enhanced]) .power-case-copy {
+  margin-top: 40px;
+}
+.power-story:not([data-enhanced]) .power-case-controls,
+.power-story:not([data-enhanced]) .power-case-strip,
+.power-story:not([data-enhanced]) .power-all-cases {
+  position: relative;
+  inset: auto;
+  margin-top: 25px;
+}
+.power-story:not([data-enhanced]) .power-case-strip {
+  width: 100%;
+}
+.power-story:not([data-enhanced]) .power-endmark {
+  position: relative;
+  inset: auto;
+  margin-top: 80px;
+  font-size: 14vw;
+}
+.power-story:not([data-enhanced]) .power-contact-copy h2 {
+  font-size: clamp(38px, 5vw, 70px);
+}
+
+.power-static-scene {
+  display: none;
+}
+.power-story:not([data-enhanced]) .power-static-scene {
+  display: block;
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  margin: 24px 0;
+}
+@media (prefers-reduced-motion: reduce),
+  (max-height: 620px),
+  (max-width: 760px) and (max-height: 740px) {
+  .power-static-scene {
+    display: block;
+    width: 100%;
+    max-height: 440px;
+    object-fit: contain;
+    margin: 24px 0;
+  }
+  .power-static-site {
+    object-fit: cover;
+  }
+  .power-products .power-copy,
+  .power-making .power-copy,
+  .power-detail .power-copy {
+    inset: auto;
+    position: relative;
+  }
+  .power-product-dialog .film {
+    height: 40svh;
+  }
+}
+.power-site-portal > img {
+  position: absolute;
+  inset: 0;
+}
+.power-delivery-photo {
+  opacity: 0;
+}
+.power-shot:focus-within {
+  pointer-events: auto !important;
+}
+.power-motion-recovery {
+  position: fixed;
+  z-index: 30;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  background: #fff;
+  padding: 10px 16px;
+  border: 1px solid #dedee3;
+  border-radius: 8px;
+  font-size: 13px;
+  max-width: 90vw;
+}
+.power-motion-recovery button {
+  color: #c70018;
+  background: none;
+  border: 0;
+  white-space: nowrap;
+  min-height: 32px;
+  cursor: pointer;
+}
+@media (min-width: 761px) {
+  .loading-copy {
+    text-align: left;
+    position: absolute;
+    top: 23%;
+    left: var(--story-gutter);
+    max-width: 35%;
+  }
+  .loading-copy h2 {
+    font-size: clamp(34px, 3.5vw, 54px);
+  }
+}
+@media (prefers-reduced-motion: reduce),
+  (max-height: 620px),
+  (max-width: 760px) and (max-height: 740px) {
+  .loading-copy {
+    position: relative;
+    inset: auto;
+    max-width: 100%;
+    text-align: center;
+  }
+  .power-contact-copy {
+    position: relative;
+    inset: auto;
+  }
+  .power-opening .opening-copy {
+    max-width: 100%;
+  }
+  .power-products .power-copy {
+    top: auto;
+  }
+  .power-making .power-copy {
+    bottom: auto;
+  }
+  .power-detail .power-copy {
+    top: auto;
+  }
+}
+.power-story:not([data-enhanced]) .loading-copy {
+  position: relative;
+  inset: auto;
+  max-width: 100%;
+  text-align: center;
+}
+/* Keep the actor's layout fixed; camera movement is a compositor transform. */
+.power-actor {
+  left: 0;
+  top: 0;
+  width: 100vw;
+  transform-origin: 0 0;
+  contain: layout paint;
+  will-change: transform, opacity;
+}
+@media (min-width: 761px) {
+  .power-loading-note {
+    width: 200px;
+  }
+}
+fieldset.power-product-list,
+fieldset.power-industry-nav,
+fieldset.power-case-strip {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.power-motion-recovery {
+  margin: 0;
+}
+.power-site-portal:after {
+  background: linear-gradient(90deg, #071018bd 0%, #07101891 52%, #07101833);
+}
