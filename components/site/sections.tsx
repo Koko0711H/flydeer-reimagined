@@ -1,71 +1,73 @@
 'use client';
 import { useState } from 'react';
 import { ArrowDown, ArrowUpRight, ArrowRight } from 'lucide-react';
-import { products, process } from '@/lib/content';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { process } from '@/lib/content';
 import { useLanguage } from './provider';
 import { Film } from './media';
+export { ProductTheater } from './product-journey';
 
 export function Hero() {
   const { lang } = useLanguage();
   return (
     <section className="hero">
-      <Film
-        src="/media/hero.mp4"
-        mobile="/media/hero-mobile.mp4"
-        poster="/media/company/poster.webp"
-        className="hero-film"
-        controls
-      />
-      <div className="hero-shade" />
-      <div className="hero-copy">
-        <p className="eyebrow hero-enter">FLYDEER POWER · 深柴能源</p>
-        <h1 className="hero-enter">
-          {lang === 'zh' ? (
-            <>
-              让动力，
-              <br />
-              <span>走得更远。</span>
-            </>
-          ) : (
-            <>
-              Power.
-              <br />
-              <span>Beyond limits.</span>
-            </>
-          )}
-        </h1>
-        <p className="hero-description hero-enter">
-          {lang === 'zh' ? (
-            <>
-              从一台发电机组，到每一个用电现场。
-              <br />
-              以可靠动力，回应不同工况的需要。
-            </>
-          ) : (
-            <>
-              From a generator set to the place it matters.
-              <br />
-              Dependable power for a world of possibilities.
-            </>
-          )}
-        </p>
-        <a className="pill light hero-enter" href="#products">
-          {lang === 'zh' ? '探索产品' : 'Explore our products'}
-          <ArrowUpRight size={20} />
-        </a>
-      </div>
-      <div className="hero-bottom">
-        <span>ENGINEERED FOR YOUR WORLD.</span>
-        <a href="#why">
-          {lang === 'zh' ? '向下探索' : 'Scroll to explore'}
-          <ArrowDown size={18} />
-        </a>
-        <span>
-          {lang === 'zh'
-            ? '发电 · 配电 · 现场服务'
-            : 'GENERATION · DISTRIBUTION · SERVICE'}
-        </span>
+      <div className="hero-sticky">
+        <Film
+          src="/media/hero.mp4"
+          mobile="/media/hero-mobile.mp4"
+          poster="/media/company/poster.webp"
+          className="hero-film"
+          controls
+        />
+        <div className="hero-shade" />
+        <div className="hero-copy">
+          <p className="eyebrow hero-enter">FLYDEER POWER · 深柴能源</p>
+          <h1 className="hero-enter">
+            {lang === 'zh' ? (
+              <>
+                让动力，
+                <br />
+                <span>走得更远。</span>
+              </>
+            ) : (
+              <>
+                Power.
+                <br />
+                <span>Beyond limits.</span>
+              </>
+            )}
+          </h1>
+          <p className="hero-description hero-enter">
+            {lang === 'zh' ? (
+              <>
+                从一台发电机组，到每一个用电现场。
+                <br />
+                以可靠动力，回应不同工况的需要。
+              </>
+            ) : (
+              <>
+                From a generator set to the place it matters.
+                <br />
+                Dependable power for a world of possibilities.
+              </>
+            )}
+          </p>
+          <a className="pill light hero-enter" href="#products">
+            {lang === 'zh' ? '探索产品' : 'Explore our products'}
+            <ArrowUpRight size={20} />
+          </a>
+        </div>
+        <div className="hero-bottom">
+          <span>ENGINEERED FOR YOUR WORLD.</span>
+          <a href="#why">
+            {lang === 'zh' ? '向下探索' : 'Scroll to explore'}
+            <ArrowDown size={18} />
+          </a>
+          <span>
+            {lang === 'zh'
+              ? '发电 · 配电 · 现场服务'
+              : 'GENERATION · DISTRIBUTION · SERVICE'}
+          </span>
+        </div>
       </div>
     </section>
   );
@@ -123,85 +125,6 @@ export function WhySection() {
           </article>
         ))}
       </div>
-    </section>
-  );
-}
-export function ProductTheater() {
-  const { lang } = useLanguage();
-  const [selected, setSelected] = useState(products[0].id);
-  return (
-    <section className="product-section" id="products">
-      <div className="section-heading wrap" data-reveal>
-        <div>
-          <p className="eyebrow">POWER, IN EVERY FORM.</p>
-          <h2>
-            {lang === 'zh' ? (
-              <>
-                不同现场。
-                <br />
-                <span>同样全力以赴。</span>
-              </>
-            ) : (
-              <>
-                Different settings.
-                <br />
-                <span>The same commitment.</span>
-              </>
-            )}
-          </h2>
-        </div>
-        <a className="text-link" href={`/products?lang=${lang}`}>
-          {lang === 'zh' ? '所有产品' : 'All products'}
-          <ArrowUpRight />
-        </a>
-      </div>
-      <Tabs
-        value={selected}
-        onValueChange={(value) => setSelected(String(value))}
-        className="product-tabs"
-      >
-        <TabsList className="product-tab-list wrap" variant="line">
-          {products.map((p) => (
-            <TabsTrigger key={p.id} value={p.id}>
-              {p.name[lang]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {products.map((p) => (
-          <TabsContent key={p.id} value={p.id} className="product-panel">
-            <div className="product-film-shell">
-              <span className="product-watermark" aria-hidden="true">
-                FLYDEER
-              </span>
-              <Film
-                src={`/media/products/${p.id}.mp4`}
-                className="product-film"
-              />
-              <div className="product-film-label">
-                <span>{p.line}</span>
-                <a href={`/showroom?lang=${lang}&model=${p.id}`}>
-                  {lang === 'zh' ? '进入 3D 展厅' : 'Enter 3D showroom'}
-                  <ArrowUpRight size={17} />
-                </a>
-              </div>
-            </div>
-            <div className="product-info">
-              <p className="eyebrow">{p.line}</p>
-              <h3>{p.name[lang]}</h3>
-              <p className="product-range">{p.range}</p>
-              <p>{p.desc[lang]}</p>
-              <div className="product-uses">{p.uses[lang]}</div>
-              <a
-                className="pill primary"
-                href={`/products/${p.id}?lang=${lang}`}
-              >
-                {lang === 'zh' ? '了解产品' : 'View product'}
-                <ArrowUpRight size={19} />
-              </a>
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
     </section>
   );
 }
@@ -306,42 +229,73 @@ export function CompanyTeaser() {
   const { lang } = useLanguage();
   return (
     <section className="company-teaser" id="company">
-      <div className="company-image">
-        <img
-          data-parallax
-          src="/media/company/factory-assembly.webp"
-          alt={lang === 'zh' ? '机组装配车间' : 'Generator assembly workshop'}
-          width="1491"
-          height="1056"
-          loading="lazy"
-        />
-      </div>
-      <div className="company-copy" data-reveal>
-        <p className="eyebrow">MEET FLYDEER</p>
-        <h2>
-          {lang === 'zh' ? (
-            <>
-              从制造的细节，
-              <br />
-              到交付的每一步。
-            </>
-          ) : (
-            <>
-              From workshop detail
-              <br />
-              to on-site delivery.
-            </>
-          )}
-        </h2>
-        <p>
-          {lang === 'zh'
-            ? '深柴能源，聚焦发电机组与配电解决方案。把设备制造与现场需求连接起来，是我们工作的起点。'
-            : 'FlyDeer focuses on generator sets and power distribution solutions. Our work begins by connecting equipment manufacturing with site requirements.'}
-        </p>
-        <a className="pill light" href={`/about?lang=${lang}`}>
-          {lang === 'zh' ? '走进深柴' : 'Meet FlyDeer'}
-          <ArrowUpRight size={20} />
-        </a>
+      <div className="company-sticky">
+        <div className="company-image">
+          <img
+            data-company-photo
+            src="/media/company/factory-assembly.webp"
+            alt={lang === 'zh' ? '机组装配车间' : 'Generator assembly workshop'}
+            width="1491"
+            height="1056"
+            loading="lazy"
+          />
+          <img
+            data-company-photo
+            src="/media/company/factory-testing-center.webp"
+            alt={
+              lang === 'zh' ? '整机检测区域' : 'Complete-set inspection area'
+            }
+            width="1440"
+            height="1000"
+            loading="lazy"
+          />
+          <img
+            data-company-photo
+            src="/media/company/delivery/delivery-site-05.webp"
+            alt={lang === 'zh' ? '现场交付' : 'On-site delivery'}
+            width="1440"
+            height="1000"
+            loading="lazy"
+          />
+          <div className="company-photo-labels" aria-hidden="true">
+            <span data-company-label>
+              01 / {lang === 'zh' ? '制造' : 'MANUFACTURING'}
+            </span>
+            <span data-company-label>
+              02 / {lang === 'zh' ? '检查' : 'INSPECTION'}
+            </span>
+            <span data-company-label>
+              03 / {lang === 'zh' ? '交付' : 'DELIVERY'}
+            </span>
+          </div>
+        </div>
+        <div className="company-copy" data-reveal>
+          <p className="eyebrow">MEET FLYDEER</p>
+          <h2>
+            {lang === 'zh' ? (
+              <>
+                从制造的细节，
+                <br />
+                到交付的每一步。
+              </>
+            ) : (
+              <>
+                From workshop detail
+                <br />
+                to on-site delivery.
+              </>
+            )}
+          </h2>
+          <p>
+            {lang === 'zh'
+              ? '深柴能源，聚焦发电机组与配电解决方案。把设备制造与现场需求连接起来，是我们工作的起点。'
+              : 'FlyDeer focuses on generator sets and power distribution solutions. Our work begins by connecting equipment manufacturing with site requirements.'}
+          </p>
+          <a className="pill light" href={`/about?lang=${lang}`}>
+            {lang === 'zh' ? '走进深柴' : 'Meet FlyDeer'}
+            <ArrowUpRight size={20} />
+          </a>
+        </div>
       </div>
     </section>
   );

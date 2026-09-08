@@ -32,6 +32,7 @@ export function Header() {
         {lang === 'zh' ? '跳到主要内容' : 'Skip to content'}
       </a>
       <header className="site-header">
+        <span className="page-scroll-progress" aria-hidden="true" />
         <a href={`/?lang=${lang}`} aria-label="FlyDeer">
           <img
             src="/media/logo.svg"

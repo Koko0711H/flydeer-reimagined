@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './motion.css';
 import { SiteProvider } from '@/components/site/provider';
 import { Header, Footer } from '@/components/site/chrome';
 import { MotionSystem } from '@/components/site/motion';

@@ -1,13 +1,16 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useLanguage } from './provider';
+import { Film } from './media';
 
 export default function ModelViewer({
   id,
   onClose,
+  presentation,
 }: {
   id: string;
   onClose: () => void;
+  presentation?: RefObject<number>;
 }) {
   const mount = useRef<HTMLDivElement>(null);
   const reset = useRef<() => void>(() => {});
@@ -38,6 +41,7 @@ export default function ModelViewer({
         ]) => {
           const container = mount.current;
           if (disposed || !container) return;
+          setState('loading');
           let renderer: InstanceType<typeof THREE.WebGLRenderer>;
           try {
             renderer = new THREE.WebGLRenderer({
@@ -64,6 +68,7 @@ export default function ModelViewer({
           controls.maxPolarAngle = Math.PI * 0.49;
           controls.minPolarAngle = Math.PI * 0.1;
           controls.autoRotateSpeed = 0.65;
+          controls.enabled = !presentation;
           renderer.domElement.setAttribute(
             'aria-label',
             lang === 'zh'
@@ -71,7 +76,14 @@ export default function ModelViewer({
               : '3D generator model. Drag or use left and right arrow keys to rotate.',
           );
           renderer.domElement.setAttribute('role', 'img');
-          renderer.domElement.tabIndex = 0;
+          renderer.domElement.tabIndex = presentation ? -1 : 0;
+          if (presentation)
+            renderer.domElement.setAttribute(
+              'aria-label',
+              lang === 'zh'
+                ? '随页面滚动旋转的发电机组三维模型'
+                : 'A generator model turning with page scroll',
+            );
           const pmrem = new THREE.PMREMGenerator(renderer);
           const room = new RoomEnvironment();
           const environment = pmrem.fromScene(room, 0.04);
@@ -86,6 +98,7 @@ export default function ModelViewer({
           const loader = new GLTFLoader();
           loader.setDRACOLoader(draco);
           let object: InstanceType<typeof THREE.Group> | null = null;
+          let modelGroup: InstanceType<typeof THREE.Group> | null = null;
           let visible = true;
           let frame = 0;
           const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -94,7 +107,18 @@ export default function ModelViewer({
             frame = requestAnimationFrame(draw);
             if (!visible || document.hidden) return;
             controls.autoRotate = rotation.current && !reduce.matches;
-            controls.update();
+            if (presentation && modelGroup) {
+              const phase = reduce.matches ? 0.25 : presentation.current;
+              modelGroup.rotation.y = -0.75 + phase * Math.PI * 1.15;
+              modelGroup.rotation.z = Math.sin(phase * Math.PI * 2) * 0.025;
+              const radius = 6.6 - Math.sin(phase * Math.PI) * 1.25;
+              camera.position.set(
+                radius * 0.58,
+                2.5 + Math.sin(phase * Math.PI) * 0.65,
+                radius * 0.8,
+              );
+              camera.lookAt(0, 0, 0);
+            } else controls.update();
             renderer.render(scene, camera);
           };
           const size = () => {
@@ -129,6 +153,7 @@ export default function ModelViewer({
             });
           };
           const keys = (event: KeyboardEvent) => {
+            if (presentation) return;
             if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
               event.preventDefault();
               rotation.current = false;
@@ -141,10 +166,16 @@ export default function ModelViewer({
           renderer.domElement.addEventListener('keydown', keys);
           const lost = (event: Event) => {
             event.preventDefault();
-            if (!disposed) setState('error');
+            if (!disposed) {
+              cleanup();
+              setState('error');
+            }
           };
           renderer.domElement.addEventListener('webglcontextlost', lost);
+          let cleaned = false;
           cleanup = () => {
+            if (cleaned) return;
+            cleaned = true;
             cancelAnimationFrame(frame);
             observer.disconnect();
             visibility.disconnect();
@@ -172,6 +203,7 @@ export default function ModelViewer({
               4 / Math.max(dimensions.x, dimensions.y, dimensions.z);
             object.position.sub(center);
             const group = new THREE.Group();
+            modelGroup = group;
             group.add(object);
             group.scale.setScalar(scale);
             scene.add(group);
@@ -186,7 +218,10 @@ export default function ModelViewer({
             };
             setState('ready');
           } catch {
-            if (!disposed) setState('error');
+            if (!disposed) {
+              cleanup();
+              setState('error');
+            }
           }
         },
       )
@@ -197,18 +232,31 @@ export default function ModelViewer({
       disposed = true;
       cleanup();
     };
-  }, [id, lang]);
+  }, [id, lang, presentation]);
   return (
     <>
-      <div ref={mount} className="model-canvas" />
+      {presentation && state !== 'ready' ? (
+        <Film
+          src={`/media/products/${id}.mp4`}
+          className="journey-fallback"
+          controls={state === 'error'}
+        />
+      ) : null}
+      <div
+        ref={mount}
+        className={`model-canvas ${presentation ? 'presentation-canvas' : ''}`}
+        data-model-state={state}
+      />
       {state === 'loading' ? (
-        <output className="model-status">
+        <output
+          className={`model-status ${presentation ? 'presentation-status' : ''}`}
+        >
           {lang === 'zh'
             ? '正在加载原站三维模型…'
             : 'Loading the original 3D model…'}
         </output>
       ) : null}
-      {state === 'error' ? (
+      {state === 'error' && !presentation ? (
         <div className="model-error" role="alert">
           <p>
             {lang === 'zh'
@@ -220,7 +268,7 @@ export default function ModelViewer({
           </button>
         </div>
       ) : null}
-      {state === 'ready' ? (
+      {state === 'ready' && !presentation ? (
         <div className="model-controls">
           <span>
             {lang === 'zh'
