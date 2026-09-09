@@ -29,10 +29,10 @@ export const products = [
     id: 'silent',
     name: copy('静音型发电机组', 'Silent generator sets'),
     line: 'SILENT POWER',
-    range: '30–600 kW',
+    range: '20–600 kW',
     desc: copy(
-      '将可靠动力，融入日常。箱式结构为关注声音与空间的场所提供发电方案。',
-      'Dependable power designed to fit everyday spaces. An enclosed configuration for applications where sound and space matter.',
+      '隔声箱体、复合消声与多门维护设计，为关注声音、空间和户外防护的场所提供动力。',
+      'Acoustic enclosure, exhaust silencing and multi-door access for sites where sound, space and outdoor protection matter.',
     ),
     uses: copy(
       '酒店 / 医疗 / 住宅备用',
@@ -48,10 +48,10 @@ export const products = [
     id: 'open-frame',
     name: copy('大功率开架机组', 'Heavy-duty open sets'),
     line: 'INDUSTRIAL POWER',
-    range: '100–2000 kW',
+    range: '20–2000 kW',
     desc: copy(
-      '为复杂工况，留出充足空间。开放式结构，便于维护、散热与现场系统集成。',
-      'Room for demanding conditions. An open configuration supporting maintenance, cooling and on-site system integration.',
+      '将柴油机、散热器、油箱、发电机与控制系统集成为开放式机组，便于散热、检修与现场集成。',
+      'Engine, radiator, fuel tank, alternator and controls in an open set for accessible cooling, servicing and on-site integration.',
     ),
     uses: copy('工厂 / 矿山 / 工程施工', 'Factories / Mining / Construction'),
     features: [

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ramp,
-  storyFrame,
+  storySample,
   storyPose,
   storyPosition,
   STORY_IDS,
@@ -46,6 +46,7 @@ export function StoryStage({
       modeRaf = 0,
       modeChanging = false;
     let offsets: number[] = [],
+      shotHeights: number[] = [],
       value = 0,
       active = -1,
       target = 1;
@@ -64,39 +65,42 @@ export function StoryStage({
       value = storyPosition(offsets, scrollY);
       if (reduced) return;
       const pose = storyPose(value, innerWidth <= 760);
-      const next = storyFrame(value, frameCount);
+      const next = storySample(value, frameCount);
       target = next;
-      const width = (viewportWidth * pose.width) / 100;
+      const objectViewport =
+        viewportWidth <= 760 ? Math.min(viewportWidth, 420) : viewportWidth;
+      const width = (objectViewport * pose.width) / 100;
       const x = (viewportWidth * pose.x) / 100 - width / 2;
       const y = (viewportHeight * pose.y) / 100 - width / 2.8;
-      actor.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) scale(${(pose.width / 100).toFixed(5)})`;
+      actor.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) scale(${(width / viewportWidth).toFixed(5)})`;
       actor.style.opacity = String(pose.opacity);
-      const factoryIn = ramp(value, 1.62, 1.97);
-      const factoryOut = ramp(value, 2.5, 2.87);
+      const factoryIn = ramp(value, 1.65, 2.02);
+      const factoryOut = ramp(value, 2.65, 3.02);
       factory.style.opacity = String(factoryIn * (1 - factoryOut));
       factory.style.clipPath = `inset(${(1 - factoryIn) * 16}% ${(1 - factoryIn) * 54}% ${(1 - factoryIn) * 16}% 0)`;
       factory.style.transform = `scale(${1.12 - factoryIn * 0.12 + factoryOut * 0.1})`;
       const roadTop = trackAt(
         [
           [0, 110],
-          [3.65, 110],
-          [4.02, 78],
-          [4.7, 60],
-          [5, innerWidth <= 760 ? 47 : 53],
-          [5.4, innerWidth <= 760 ? 47 : 53],
-          [5.9, 0],
-          [6.8, 0],
-          [7.15, 110],
+          [3.6, 110],
+          [4, 87],
+          [4.5, 68],
+          [5, innerWidth <= 760 ? 47 : 54],
+          [5.55, innerWidth <= 760 ? 47 : 54],
+          [6.2, 0],
+          [6.72, 0],
+          [7, 110],
         ],
         value,
       );
       road.style.transform = `translateY(${roadTop}svh)`;
-      const arrive = ramp(value, 5.65, 6.13);
-      const leave = ramp(value, 6.58, 7.02);
-      destination.style.opacity = String(arrive * (1 - ramp(value, 7.22, 7.7)));
-      destination.style.clipPath = `inset(${(1 - arrive) * 10 + leave * 12}% ${(1 - arrive) * 10 + leave * 5}% ${(1 - arrive) * 10 + leave * 54}% ${(1 - arrive) * 50 + leave * 62}% round ${leave * 20}px)`;
-      destination.style.transform = `scale(${1.16 - arrive * 0.16})`;
-      delivery.style.opacity = String(ramp(value, 6.7, 6.94));
+      const arrive = ramp(value, 5.75, 6.3);
+      const leave = ramp(value, 6.7, 7);
+      const portrait = viewportWidth <= 760;
+      destination.style.opacity = String(arrive);
+      destination.style.clipPath = `inset(${(1 - arrive) * 5 + leave * (portrait ? 10 : 16)}% ${leave * 6}% ${leave * (portrait ? 68 : 51)}% ${(1 - arrive) * 28 + leave * (portrait ? 52 : 62)}% round ${leave * 16}px)`;
+      destination.style.transform = `scale(${1.08 - arrive * 0.08})`;
+      delivery.style.opacity = String(ramp(value, 6.84, 7.2));
       const chapter = Math.min(7, Math.floor(value));
       if (active !== chapter) {
         active = chapter;
@@ -108,8 +112,17 @@ export function StoryStage({
       world.dataset.position = value.toFixed(3);
       for (let i = 0; i < shots.length; i++) {
         const local = value - i;
+        // Keep readable copy in its viewport lane while the sticky section
+        // reaches its boundary; its opacity handles the outgoing transition.
+        const hold = Math.max(
+          0,
+          Math.min(shotHeights[i], scrollY - offsets[i + 1] + shotHeights[i]),
+        );
+        shots[i].style.setProperty('--copy-hold', `${hold.toFixed(2)}px`);
         const opacity =
-          local >= 0 ? 1 - ramp(local, 0.38, 0.75) : ramp(local, -0.5, -0.12);
+          local >= 0
+            ? 1 - ramp(local, i === 6 ? 0.48 : 0.56, i === 6 ? 0.72 : 0.9)
+            : ramp(local, i === 7 ? -0.1 : -0.28, 0);
         shots[i].style.setProperty('--copy-opacity', String(opacity));
         shots[i].style.pointerEvents = opacity < 0.12 ? 'none' : '';
       }
@@ -128,6 +141,7 @@ export function StoryStage({
       offsets.push(
         owner.offsetHeight + owner.getBoundingClientRect().top + scrollY,
       );
+      shotHeights = shots.map((shot) => shot.offsetHeight);
       schedule();
     };
     const queueMeasure = () => {
@@ -143,6 +157,7 @@ export function StoryStage({
       player?.setActive(!reduced && inView);
       shots.forEach((shot) => {
         shot.style.removeProperty('--copy-opacity');
+        shot.style.removeProperty('--copy-hold');
         shot.style.pointerEvents = '';
       });
       const restore = inView && scrollY > 1;
@@ -218,9 +233,33 @@ export function StoryStage({
           )
             throw new Error('Invalid sequence manifest');
           frameCount = manifest.frameCount;
+          const framing =
+            'framing' in manifest &&
+            manifest.framing &&
+            typeof manifest.framing === 'object' &&
+            'baseWidth' in manifest.framing &&
+            'baseHeight' in manifest.framing &&
+            'paddingTop' in manifest.framing &&
+            'expandedThrough' in manifest.framing &&
+            manifest.framing.baseWidth === 1000 &&
+            manifest.framing.baseHeight === 714 &&
+            manifest.framing.paddingTop === 2200 &&
+            manifest.framing.expandedThrough === 330
+              ? {
+                  baseWidth: 1000,
+                  baseHeight: 714,
+                  paddingTop: 2200,
+                  expandedThrough: 330,
+                }
+              : undefined;
+          actor.style.setProperty(
+            '--sequence-padding',
+            String(framing ? framing.paddingTop / framing.baseWidth : 0),
+          );
           player = createFrameSequence({
             canvas,
             count: frameCount,
+            framing,
             prefix:
               manifest.version >= 3 ? '/media/story/motion/' : '/media/story/',
             onFrame: (frame, stats) => {

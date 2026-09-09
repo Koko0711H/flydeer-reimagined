@@ -23,3 +23,7 @@ Framework and UI foundation: Sites scaffold, Vinext/React, Base UI and shadcn. T
 ## FRS POWER identity and delivery sequence
 
 The FRS POWER logo is supplied by the user. The generator mesh and factory/product photographs come from the existing authorized company asset library. The crane rig, loading platform, shipping container, truck, camera animation and rendered WebP sequences were newly created for this website in Blender. No reference-site models, frames, textures or runtime code are included. Editable Blender scenes and render scripts are retained separately from the public website.
+
+## User-provided company brochure
+
+`public/media/brochure/container.webp` is cropped from the containerized product rendering on PDF spread11 (printed17–18). `manufacturing.webp` is extracted from an embedded workshop photo on PDF spread6 (printed07–08). Source: user-provided《FORIS-POWER发电机组画册-福州.pdf》, reused for this company website as requested. These assets retain their original rights; this document does not relicense them. `lib/brochure.ts` contains supported bilingual summaries and `lib/brochure-models.json` contains383 source-attributed configurations after withholding10 inconsistent rows. Full extraction and image manifest are retained in the separate delivery folder. The container rendering is identified as a brochure image, not an actual project delivery photograph.

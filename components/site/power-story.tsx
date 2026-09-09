@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
@@ -10,7 +10,9 @@ import {
   X,
 } from 'lucide-react';
 import { cases, contact, products, process } from '@/lib/content';
+import { brochure } from '@/lib/brochure';
 import { useLanguage } from './provider';
+import { STORY_CHAPTER_HEIGHT } from '@/lib/story-math.mjs';
 import { StoryStage } from './story-stage';
 import { Film } from './media';
 import {
@@ -79,7 +81,14 @@ export function PowerStory() {
     },
   ];
   return (
-    <main id="main" className="power-story" data-story-owner="home">
+    <main
+      id="main"
+      className="power-story"
+      data-story-owner="home"
+      style={
+        { '--chapter-length': `${STORY_CHAPTER_HEIGHT}svh` } as CSSProperties
+      }
+    >
       <StoryStage application={site.id} industry={industries[industry].image} />
       <section
         className="power-chapter power-opening"
@@ -98,8 +107,8 @@ export function PowerStory() {
             </h1>
             <p>
               {t(
-                '发电机组与配电解决方案。从制造，到您需要的地方。',
-                'Generator sets and power solutions. From our workshop to your world.',
+                '柴油发电机组与电力系统。研发、制造、安装与维护，连接每一步。',
+                'Diesel generator sets and power systems. Development, manufacturing, installation and maintenance, connected.',
               )}
             </p>
             <a className="power-link" href="#products">
@@ -180,6 +189,13 @@ export function PowerStory() {
                   {t('3D 展厅', '3D showroom')}
                 </a>
               </div>
+              <a
+                className="power-link power-catalog-link"
+                href={`/products?lang=${lang}#engine-series`}
+              >
+                {t('按发动机与频率查找配置', 'Browse engine configurations')}
+                <ArrowUpRight size={16} />
+              </a>
             </div>
           </div>
           <img
@@ -215,16 +231,11 @@ export function PowerStory() {
               {t('从工厂出发', 'FROM THE WORKSHOP')}
             </p>
             <h2>
-              {t('向上，', 'Built with care.')}
+              {t('每一步制造。', 'Considered at every step.')}
               <br />
-              {t('是每一步的底气。', 'Ready to rise.')}
+              {t('都为运行准备。', 'Built for operation.')}
             </h2>
-            <p>
-              {t(
-                '从结构加工、部件装配，到整机检查。把细节做实，让设备为下一程准备就绪。',
-                'Fabrication, assembly and complete-set checks. Attention to the details before the journey begins.',
-              )}
-            </p>
+            <p>{brochure.manufacturing[lang]}</p>
             <div className="power-process">
               {process.slice(0, 3).map((p) => (
                 <a href={`/about?lang=${lang}`} key={p.image}>
@@ -266,29 +277,26 @@ export function PowerStory() {
               {t('换个角度，看细节', 'A CLOSER LOOK')}
             </p>
             <h2>
-              {t('结构清晰。', 'Open by design.')}
+              {t('整机协同。', 'Working as one.')}
               <br />
-              <em>{t('考虑周全。', 'Considered in detail.')}</em>
+              <em>{t('配置因您而定。', 'Configured for you.')}</em>
             </h2>
-            <p>
-              {t(
-                '发动机、发电机、控制与底座协同布局。让运行、维护和现场集成都有合适的空间。',
-                'Engine, alternator, controls and base, arranged together. Space for operation, maintenance and on-site integration.',
-              )}
-            </p>
+            <p>{brochure.controls[lang]}</p>
             <dl className="power-details">
               <div>
-                <dt>{t('配置', 'Configuration')}</dt>
-                <dd>{t('围绕负载与工况', 'Around loads and conditions')}</dd>
-              </div>
-              <div>
-                <dt>{t('维护', 'Maintenance')}</dt>
-                <dd>{t('开放、可接近的结构', 'Open, accessible structure')}</dd>
-              </div>
-              <div>
-                <dt>{t('集成', 'Integration')}</dt>
+                <dt>{t('控制', 'Control')}</dt>
                 <dd>
-                  {t('衔接现场配电需求', 'Connected to site distribution')}
+                  {t('集成控制与运行监测', 'Integrated control and monitoring')}
+                </dd>
+              </div>
+              <div>
+                <dt>{t('并机', 'Paralleling')}</dt>
+                <dd>{t('多机同步配置', 'Synchronized multi-set options')}</dd>
+              </div>
+              <div>
+                <dt>{t('辅助', 'Auxiliaries')}</dt>
+                <dd>
+                  {t('储油、预热与消声', 'Fuel, preheating and silencing')}
                 </dd>
               </div>
             </dl>
@@ -322,15 +330,15 @@ export function PowerStory() {
               {t('为下一程，就位', 'READY FOR THE NEXT CHAPTER')}
             </p>
             <h2>
-              {t('把交付，', 'Think beyond')}
+              {t('装箱，就位。', 'Integrated. Protected.')}
               <br />
-              <em>{t('想在出发之前。', 'the factory gate.')}</em>
+              <em>{t('准备抵达。', 'Ready to go.')}</em>
             </h2>
           </div>
           <p className="power-loading-note">
             {t(
-              '运输、卸载、落位、安装。将现场条件，提前纳入方案。',
-              'Transport. Unloading. Positioning. Installation. Plan for the site before departure.',
+              '集成发电、冷却、排气与控制系统。让运输、落位和维护，在出发前就有安排。',
+              'Generation, cooling, exhaust and controls together. Plan transport, positioning and service access before departure.',
             )}
           </p>
         </div>
@@ -487,12 +495,7 @@ export function PowerStory() {
               <br />
               <em>{t('一起抵达。', 'Our next journey.')}</em>
             </h2>
-            <p>
-              {t(
-                '告诉我们负载、应用场景与交付地点。从实际需求，开始下一段旅程。',
-                'Tell us about your loads, application and destination. Our next journey starts with your requirements.',
-              )}
-            </p>
+            <p>{brochure.service[lang]}</p>
             <a className="pill primary" href={`/service?lang=${lang}#inquiry`}>
               {t('聊聊您的项目', 'Discuss your project')}
               <ArrowUpRight size={19} />

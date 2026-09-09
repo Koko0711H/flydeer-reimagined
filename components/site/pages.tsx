@@ -11,6 +11,8 @@ import { products, contact } from '@/lib/content';
 import { useLanguage } from './provider';
 import { Film } from './media';
 import { ProcessStory } from './sections';
+import { brochure } from '@/lib/brochure';
+import { EngineCatalog } from './engine-catalog';
 import { ContactBand } from './chrome';
 
 export function ProductsPage() {
@@ -58,6 +60,32 @@ export function ProductsPage() {
             </div>
           </article>
         ))}
+      </section>
+      <EngineCatalog />
+      <section className="brochure-systems wrap">
+        <img
+          src="/media/brochure/container.webp"
+          alt={
+            lang === 'zh'
+              ? '画册中的集装箱式发电机组'
+              : 'Containerized generator from the company brochure'
+          }
+          width="1600"
+          height="1050"
+          loading="lazy"
+        />
+        <div>
+          <p className="eyebrow">CONTAINERIZED POWER</p>
+          <h2>
+            {lang === 'zh' ? '集成，面向现场。' : 'Integrated for the site.'}
+          </h2>
+          <p>{brochure.container[lang]}</p>
+          <p>{brochure.controls[lang]}</p>
+          <a className="text-link" href={`/service?lang=${lang}#inquiry`}>
+            {lang === 'zh' ? '讨论集装箱方案' : 'Discuss a container solution'}
+            <ArrowUpRight size={18} />
+          </a>
+        </div>
       </section>
       <ContactBand />
     </main>
@@ -175,16 +203,8 @@ export function AboutPage() {
           )}
         </h2>
         <div data-reveal>
-          <p>
-            {lang === 'zh'
-              ? '福瑞斯专注于发电机组及配电解决方案，产品涵盖静音型、开架型、移动拖车机组与高压配电系统。'
-              : 'FRS POWER focuses on generator sets and power distribution solutions, spanning enclosed, open, trailer-mounted and high-voltage systems.'}
-          </p>
-          <p>
-            {lang === 'zh'
-              ? '从负载与工况沟通，到整机制造、检查和交付安排，我们关注设备如何适应实际现场，也关注后续运行与维护的便利。'
-              : 'From load and operating-condition discussions to manufacturing, checks and delivery, we consider how equipment fits the site and how it will be operated and maintained.'}
-          </p>
+          <p>{brochure.company[lang]}</p>
+          <p>{brochure.manufacturing[lang]}</p>
         </div>
       </section>
       <div className="about-film">
@@ -195,24 +215,32 @@ export function AboutPage() {
         />
       </div>
       <ProcessStory />
-      <section className="location-row wrap">
-        <h2>{lang === 'zh' ? '协同，向前。' : 'Working together.'}</h2>
-        <article>
-          <h3>{lang === 'zh' ? '研发' : 'Development'}</h3>
-          <p>{lang === 'zh' ? '辽宁 · 沈阳' : 'Shenyang, Liaoning'}</p>
-        </article>
-        <article>
-          <h3>{lang === 'zh' ? '生产' : 'Production'}</h3>
+      <section className="brochure-systems wrap">
+        <img
+          src="/media/brochure/manufacturing.webp"
+          alt={
+            lang === 'zh'
+              ? '画册中的制造车间'
+              : 'Manufacturing facility from the company brochure'
+          }
+          width="1368"
+          height="719"
+          loading="lazy"
+        />
+        <div>
+          <p className="eyebrow">FROM DESIGN TO DELIVERY</p>
+          <h2>
+            {lang === 'zh'
+              ? '工艺与系统，共同成就整机。'
+              : 'Process and systems. One complete set.'}
+          </h2>
+          <p>{brochure.manufacturing[lang]}</p>
           <p>
-            {lang === 'zh' ? '辽宁 · 沈阳' : 'Shenyang, Liaoning'}
-            <br />
-            {lang === 'zh' ? '福建 · 宁德' : 'Ningde, Fujian'}
+            {lang === 'zh'
+              ? '激光切割、数控加工、焊接与涂装，让结构制造与整机装配紧密衔接。研发、设计和测试团队协同推进产品优化。'
+              : 'Laser cutting, CNC machining, welding and finishing connect fabrication with complete-set assembly. Development, design and testing teams work together on product improvements.'}
           </p>
-        </article>
-        <article>
-          <h3>{lang === 'zh' ? '运营' : 'Operations'}</h3>
-          <p>{lang === 'zh' ? '福建 · 福州' : 'Fuzhou, Fujian'}</p>
-        </article>
+        </div>
       </section>
       <ContactBand />
     </main>
@@ -335,8 +363,8 @@ export function ServicePage() {
         </h1>
         <p>
           {lang === 'zh'
-            ? '产品选型、项目配置、交付与服务，直接与我们沟通。'
-            : 'Talk to us about selection, configuration, delivery and service.'}
+            ? '选型、安装、日常维护、备件更换与升级大修，直接与我们沟通。'
+            : 'Talk to us about selection, installation, maintenance, spare parts, upgrades and overhauls.'}
         </p>
       </section>
       <section className="service-content wrap" id="contact">

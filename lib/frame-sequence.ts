@@ -4,12 +4,19 @@ export function createFrameSequence({
   canvas,
   count,
   prefix,
+  framing,
   onFrame,
   onUnavailable,
 }: {
   canvas: HTMLCanvasElement;
   count: number;
   prefix: string;
+  framing?: {
+    baseWidth: number;
+    baseHeight: number;
+    paddingTop: number;
+    expandedThrough: number;
+  };
   onFrame: (
     frame: number,
     stats: { decoded: number; encoded: number; misses: number; draws: number },
@@ -17,6 +24,10 @@ export function createFrameSequence({
   onUnavailable: (failed: boolean) => void;
 }) {
   const context = canvas.getContext('2d');
+  const baseWidth = framing?.baseWidth ?? 1000,
+    baseHeight = framing?.baseHeight ?? 714,
+    paddingTop = framing?.paddingTop ?? 0,
+    expandedThrough = framing?.expandedThrough ?? 0;
   const blobs = new Map<number, Blob>();
   const bitmaps = new Map<number, ImageBitmap>();
   const downloading = new Map<number, AbortController>();
@@ -24,7 +35,9 @@ export function createFrameSequence({
   const failures = new Map<number, number>();
   const retries = new Map<number, number>();
   let target = 1,
-    previous = 1,
+    sample = 1,
+    started = false,
+    drawnSignature = '',
     direction = 1,
     drawn = -1,
     raf = 0,
@@ -34,15 +47,33 @@ export function createFrameSequence({
     draws = 0,
     misses = 0;
   let small = matchMedia('(max-width:760px)').matches;
-  let radius = small ? 6 : 12;
   let width = small ? 640 : 1000;
-  let height = Math.round((width * 5) / 7);
+  let height = Math.round((width * (baseHeight + paddingTop)) / baseWidth);
+  const cacheRadius = () => {
+    const originalRadius = small ? 6 : 12;
+    if (paddingTop <= 0) return originalRadius;
+    const budget = (small ? 32 : 100) * 1024 * 1024;
+    const bytesPerBitmap = width * height * 4;
+    // The odd desired window retains its center plus both neighbors. Reserve
+    // one more bitmap for the previous visible frame during a distant seek.
+    return Math.max(
+      1,
+      Math.min(originalRadius, Math.floor((budget / bytesPerBitmap - 2) / 2)),
+    );
+  };
+  let radius = cacheRadius();
+  const frameHeight = (frame: number) =>
+    frame <= expandedThrough
+      ? height
+      : Math.round((width * baseHeight) / baseWidth);
+  const frameOffset = (frame: number) =>
+    frame <= expandedThrough ? 0 : Math.round((width * paddingTop) / baseWidth);
   const wanted = (distance: number) => {
-    const frames = [target];
+    const frames = new Set([target, Math.floor(sample), Math.ceil(sample)]);
     for (let i = 1; i <= distance; i++)
       for (const f of [target + i * direction, target - i * direction])
-        if (f >= 1 && f <= count) frames.push(f);
-    return frames;
+        if (f >= 1 && f <= count) frames.add(f);
+    return [...frames];
   };
   const reportFailure = (f: number) => {
     failures.set(f, (failures.get(f) ?? 0) + 1);
@@ -63,18 +94,32 @@ export function createFrameSequence({
           (a, b) => Math.abs(a - target) - Math.abs(b - target),
         )[0];
     const image = bitmaps.get(key);
-    if (!image || key === drawn || Math.abs(key - target) > 4) return;
-    if (canvas.width !== image.width) canvas.width = image.width;
-    if (canvas.height !== image.height) canvas.height = image.height;
+    const signature = String(key);
+    if (!image || signature === drawnSignature || Math.abs(key - target) > 4)
+      return;
+    // Expanded and original assets share one canvas. Keep the original image
+    // region at the same offset even when adjacent frames have different sizes.
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+    // Different mechanical poses must never overlap: paint one opaque frame
+    // after clearing the canvas. Camera transforms remain continuous outside.
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = 'source-over';
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0);
+    context.drawImage(image, 0, frameOffset(key));
     drawn = key;
+    drawnSignature = signature;
     draws++;
     if (key === target) onUnavailable(false);
-    onFrame(key, { decoded: bitmaps.size, encoded: blobs.size, misses, draws });
+    onFrame(key, {
+      decoded: bitmaps.size,
+      encoded: blobs.size,
+      misses,
+      draws,
+    });
   };
   const requestDraw = () => {
-    if (!raf) raf = requestAnimationFrame(draw);
+    if (!disposed && active && !raf) raf = requestAnimationFrame(draw);
   };
   const pumpDecode = () => {
     if (disposed || !active) return;
@@ -98,7 +143,7 @@ export function createFrameSequence({
       decoding.add(frame);
       void createImageBitmap(blob, {
         resizeWidth: width,
-        resizeHeight: height,
+        resizeHeight: frameHeight(frame),
         resizeQuality: 'high',
       })
         .then((image) => {
@@ -106,6 +151,7 @@ export function createFrameSequence({
             disposed ||
             !active ||
             image.width !== width ||
+            image.height !== frameHeight(frame) ||
             Math.abs(frame - target) > radius
           ) {
             image.close();
@@ -169,31 +215,43 @@ export function createFrameSequence({
   };
   return {
     resize(portrait: boolean) {
-      if (small === portrait) return;
+      if (disposed || small === portrait) return;
       small = portrait;
-      radius = small ? 6 : 12;
       width = small ? 640 : 1000;
-      height = Math.round((width * 5) / 7);
+      height = Math.round((width * (baseHeight + paddingTop)) / baseWidth);
+      radius = cacheRadius();
       for (const image of bitmaps.values()) image.close();
       bitmaps.clear();
       drawn = -1;
+      drawnSignature = '';
       pumpDecode();
       requestDraw();
     },
     seek(frame: number) {
-      target = Math.max(1, Math.min(count, frame));
-      if (target !== previous) {
-        direction = target > previous ? 1 : -1;
-        if (!bitmaps.has(target)) misses++;
-        previous = target;
+      if (disposed) return;
+      const previousSample = sample,
+        previousTarget = target;
+      sample = Math.max(1, Math.min(count, Number.isFinite(frame) ? frame : 1));
+      target = Math.round(sample);
+      const changed =
+        !started ||
+        target !== previousTarget ||
+        Math.floor(sample) !== Math.floor(previousSample) ||
+        Math.ceil(sample) !== Math.ceil(previousSample);
+      started = true;
+      if (sample !== previousSample) {
+        direction = sample > previousSample ? 1 : -1;
       }
+      if (target !== previousTarget && !bitmaps.has(target)) misses++;
       if ((failures.get(target) ?? 0) >= 2) onUnavailable(true);
       requestDraw();
-      pumpDecode();
-      pumpDownloads();
+      if (changed) {
+        pumpDecode();
+        pumpDownloads();
+      }
     },
     setActive(value: boolean) {
-      if (active === value) return;
+      if (disposed || active === value) return;
       active = value;
       if (active) {
         pumpDecode();
@@ -205,9 +263,11 @@ export function createFrameSequence({
         for (const image of bitmaps.values()) image.close();
         bitmaps.clear();
         drawn = -1;
+        drawnSignature = '';
       }
     },
     retry() {
+      if (disposed) return;
       for (const frame of failures.keys()) blobs.delete(frame);
       failures.clear();
       retries.clear();

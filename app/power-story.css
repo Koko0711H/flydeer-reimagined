@@ -39,6 +39,9 @@
 }
 .power-actor canvas {
   opacity: 0;
+  top: calc(-100vw * var(--sequence-padding, 0));
+  bottom: auto;
+  height: auto;
 }
 .power-actor img {
   mix-blend-mode: multiply;
@@ -1096,7 +1099,8 @@
   top: 0;
   width: 100vw;
   transform-origin: 0 0;
-  contain: layout paint;
+  contain: layout;
+  overflow: visible;
   will-change: transform, opacity;
 }
 @media (min-width: 761px) {
@@ -1116,4 +1120,288 @@ fieldset.power-case-strip {
 }
 .power-site-portal:after {
   background: linear-gradient(90deg, #071018bd 0%, #07101891 52%, #07101833);
+}
+
+/* One measured chapter length, with an uninterrupted object lane. */
+html:has(.power-story[data-enhanced='true'][data-reduced='false']) {
+  scroll-padding-top: 0;
+}
+.power-story[data-enhanced='true'][data-reduced='false'] .power-chapter {
+  min-height: var(--chapter-length);
+}
+.power-story[data-enhanced='true'][data-reduced='false'] .power-shot {
+  transform: translate3d(0, var(--copy-hold, 0px), 0);
+}
+.power-story[data-enhanced='true'][data-reduced='false'] .power-loading-note {
+  top: 40%;
+  bottom: auto;
+  color: #626268;
+}
+.power-story {
+  --story-gutter: clamp(28px, 6.8vw, 108px);
+}
+.power-shot h1,
+.power-shot h2 {
+  letter-spacing: -0.028em;
+  line-height: 1.14;
+}
+.power-shot p {
+  line-height: 1.75;
+}
+.power-product-list button {
+  min-height: 50px;
+  font-size: 16px;
+  border-bottom-color: #d9d9de;
+}
+.power-product-list button small {
+  font-size: 14px;
+}
+.power-product-list button svg {
+  transition: transform 180ms ease;
+}
+.power-product-list button:hover svg {
+  transform: translate(2px, -2px);
+}
+.power-product-detail > p {
+  font-size: 16px;
+}
+.power-factory-portal {
+  background: #1b1d20;
+}
+.power-factory-portal > img {
+  opacity: 0.32;
+  filter: saturate(0.35);
+}
+.power-factory-portal::after {
+  background: linear-gradient(90deg, #1b1d20 0%, #1b1d20d9 32%, #1b1d2033 76%);
+}
+.power-process {
+  gap: 12px;
+  max-width: 460px;
+}
+.power-process img {
+  opacity: 0.85;
+  border-radius: 0;
+}
+.power-details {
+  margin: 24px 0;
+}
+.power-details div {
+  font-size: 16px;
+  padding: 15px 0;
+}
+.power-loading-note {
+  max-width: 310px;
+  line-height: 1.75;
+}
+.power-case-strip button,
+.power-case-strip img {
+  width: 100px;
+}
+.power-case-strip button {
+  font-size: 14px;
+}
+.power-case-strip img {
+  height: 62px;
+}
+.power-case-strip button[aria-pressed='true'] img {
+  border-bottom: 2px solid #fff;
+}
+.power-case-strip button {
+  transition: opacity 180ms ease;
+}
+.power-contact-copy {
+  max-width: 700px;
+  width: 54%;
+}
+.power-contact-copy h2 {
+  font-size: clamp(44px, 4.7vw, 72px);
+}
+@media (min-width: 761px) {
+  .power-opening .power-shot {
+    padding-top: max(145px, 23svh);
+  }
+  .opening-copy {
+    max-width: 49%;
+  }
+  .opening-copy h1 {
+    font-size: clamp(48px, 5.2vw, 78px);
+  }
+  .opening-copy > p:not(.power-signature) {
+    max-width: 28em;
+  }
+  .power-products .power-copy {
+    width: 39%;
+    top: 50%;
+  }
+  .power-products h2 {
+    font-size: clamp(34px, 3.5vw, 52px);
+  }
+  .power-making .power-copy {
+    left: var(--story-gutter);
+    right: auto;
+    width: 39%;
+  }
+  .power-making h2 {
+    font-size: clamp(36px, 3.8vw, 56px);
+  }
+  .power-detail .power-copy {
+    width: 38%;
+  }
+  .power-detail h2 {
+    font-size: clamp(36px, 3.7vw, 56px);
+  }
+  .loading-copy {
+    top: 19%;
+    max-width: 34%;
+  }
+  .loading-copy h2 {
+    font-size: clamp(36px, 3.7vw, 56px);
+  }
+  .power-industry-heading {
+    top: 60%;
+  }
+  .power-industry-picker {
+    top: 58%;
+  }
+  .power-app-heading {
+    top: 18%;
+    max-width: 49%;
+  }
+  .power-case-copy {
+    bottom: 24%;
+    width: 40%;
+  }
+  .power-contact-copy {
+    top: 24%;
+  }
+  .power-endmark {
+    bottom: 6%;
+    font-size: 12.5vw;
+  }
+}
+@media (max-width: 760px) {
+  .power-story {
+    --story-gutter: 7vw;
+  }
+  .power-story[data-enhanced='true'][data-reduced='false'] .power-loading-note {
+    top: 29%;
+    max-width: 86%;
+  }
+  .power-product-list button {
+    min-height: 43px;
+    font-size: 14px;
+  }
+  .power-product-list button small {
+    font-size: 12px;
+  }
+  .power-product-detail > p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .power-making .power-copy {
+    top: auto;
+    bottom: 9%;
+  }
+  .power-making h2 {
+    font-size: 34px;
+  }
+  .power-making .power-copy > p:not(.power-caption) {
+    max-width: 34ch;
+  }
+  .power-process {
+    margin: 18px 0 6px;
+  }
+  .power-process img {
+    height: 52px;
+  }
+  .power-details div {
+    font-size: 14px;
+    padding: 7px 0;
+  }
+  .power-detail .power-copy {
+    top: 100px;
+  }
+  .power-details {
+    margin: 14px 0;
+  }
+  .power-loading-note {
+    font-size: 15px !important;
+    bottom: 11%;
+  }
+  .power-industry-heading {
+    top: 50%;
+  }
+  .power-industry-picker {
+    top: auto;
+    bottom: 7%;
+  }
+  .power-app-heading {
+    top: 33%;
+    max-width: 86%;
+  }
+  .power-case-copy {
+    bottom: 29%;
+  }
+  .power-case-strip button,
+  .power-case-strip img {
+    width: 82px;
+  }
+  .power-case-strip button {
+    font-size: 12px;
+  }
+  .power-case-strip img {
+    height: 50px;
+  }
+  .power-contact-copy {
+    top: 40%;
+    width: 86%;
+  }
+  .power-contact-copy h2 {
+    font-size: 42px;
+  }
+}
+@media (prefers-reduced-motion: reduce),
+  (max-height: 620px),
+  (max-width: 760px) and (max-height: 740px) {
+  .power-making .power-copy,
+  .power-products .power-copy,
+  .power-detail .power-copy,
+  .power-contact-copy,
+  .power-industry-heading,
+  .power-industry-picker,
+  .power-app-heading,
+  .power-case-copy,
+  .loading-copy {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: 720px;
+  }
+}
+.power-story:not([data-enhanced]) .power-making .power-copy,
+.power-story:not([data-enhanced]) .power-contact-copy {
+  position: relative;
+  inset: auto;
+  width: 100%;
+}
+.power-catalog-link {
+  font-size: 14px;
+  margin-top: 6px;
+}
+@media (max-width: 760px) {
+  .power-product-list {
+    margin: 18px 0 12px;
+  }
+  .power-product-detail > p {
+    margin: 10px 0;
+    min-height: 0;
+  }
+  .power-links {
+    gap: 22px;
+  }
+  .power-catalog-link {
+    margin-top: 0;
+    min-height: 36px;
+  }
 }

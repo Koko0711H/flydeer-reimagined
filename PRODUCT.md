@@ -16,7 +16,7 @@ The existing website serves people exploring generator sets, distribution equipm
 
 ## Capabilities and Constraints
 
-Chinese and English; five product types and detail pages; a 3D showroom; company information; application gallery; news empty state; sales/service contacts and an inquiry-to-email draft. Preserve existing capabilities and contact values pending replacement by the user. The homepage is a continuous eight-scene journey; its former module order is superseded by the user’s creative correction. The original shenchai-main website and repository are protected.
+Chinese and English; five product types and detail pages; a 3D showroom; brochure-based company/manufacturing/service copy; a searchable 383-configuration engine catalog with seven brands and 50/60 Hz; application gallery; news empty state; sales/service contacts and an inquiry-to-email draft. Preserve existing capabilities and contact values pending replacement by the user. The homepage is a continuous eight-scene journey; its former module order is superseded by the user’s creative correction. The original shenchai-main website and repository are protected.
 
 ## Brand Commitments
 
@@ -24,7 +24,7 @@ Chinese and English; five product types and detail pages; a 3D showroom; company
 
 ## Evidence on Hand
 
-Supplied brand PNG, existing local product GLB and video files, factory and application photos. These do not establish named customer projects, independently verified performance claims, or new contact details. Newly made shipping scenes are illustrative.
+Supplied brand PNG, existing local product GLB and video files, factory and application photos. These do not establish named customer projects, independently verified performance claims, or new contact details. Newly made shipping scenes are illustrative. A user-supplied 26-spread company brochure supplies supported copy, two product/manufacturing images and parameter tables. Ten internally inconsistent rows remain in extraction files and are withheld from the live catalog. Conflicting company history, scale, legal names and contacts are not treated as confirmed replacements.
 
 ## Product Principles
 
