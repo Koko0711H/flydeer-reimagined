@@ -5,6 +5,8 @@ export function createFrameSequence({
   count,
   prefix,
   framing,
+  crops,
+  imageSizes,
   onFrame,
   onUnavailable,
 }: {
@@ -17,6 +19,8 @@ export function createFrameSequence({
     paddingTop: number;
     expandedThrough: number;
   };
+  crops?: number[][];
+  imageSizes?: number[][];
   onFrame: (
     frame: number,
     stats: { decoded: number; encoded: number; misses: number; draws: number },
@@ -31,9 +35,10 @@ export function createFrameSequence({
   const blobs = new Map<number, Blob>();
   const bitmaps = new Map<number, ImageBitmap>();
   const downloading = new Map<number, AbortController>();
-  const decoding = new Set<number>();
+  const decoding = new Map<number, { width: number; height: number }>();
   const failures = new Map<number, number>();
   const retries = new Map<number, number>();
+  let preparedTarget: number | null = null;
   let target = 1,
     sample = 1,
     started = false,
@@ -49,7 +54,94 @@ export function createFrameSequence({
   let small = matchMedia('(max-width:760px)').matches;
   let width = small ? 640 : 1000;
   let height = Math.round((width * (baseHeight + paddingTop)) / baseWidth);
+  const cropped = crops?.length === count && imageSizes?.length === count;
+  const cropStyleKeys = ['position', 'left', 'top', 'width', 'height'] as const;
+  const originalStyle = cropped
+    ? cropStyleKeys.map((key) => canvas.style[key])
+    : [];
+  const restoreCanvasStyle = () => {
+    if (cropped)
+      cropStyleKeys.forEach((key, index) => {
+        canvas.style[key] = originalStyle[index];
+      });
+  };
+  const positionCrop = (frame: number) => {
+    if (!cropped || frame < 1) return;
+    const [x, y, cropWidth, cropHeight] = crops![frame - 1];
+    canvas.style.position = 'absolute';
+    canvas.style.left = `${(x / 1000) * 100}%`;
+    canvas.style.top = `${(y / 714) * 100}%`;
+    canvas.style.width = `${(cropWidth / 1000) * 100}%`;
+    canvas.style.height = `${(cropHeight / 714) * 100}%`;
+  };
+  const frameSize = (frame: number) => {
+    if (!cropped)
+      return {
+        width,
+        height:
+          frame <= expandedThrough
+            ? height
+            : Math.round((width * baseHeight) / baseWidth),
+      };
+    const [nativeWidth, nativeHeight] = imageSizes![frame - 1];
+    const scale = Math.min(
+      1,
+      (small ? 960 : 2000) / Math.max(nativeWidth, nativeHeight),
+    );
+    return {
+      width: Math.max(1, Math.round(nativeWidth * scale)),
+      height: Math.max(1, Math.round(nativeHeight * scale)),
+    };
+  };
+  const bitmapBytes = (size: { width: number; height: number }) =>
+    size.width * size.height * 4;
+  const cropBudget = () => (small ? 24 : 100) * 1024 * 1024;
+  const pendingBytes = () =>
+    [...decoding.values()].reduce(
+      (bytes, size) => bytes + bitmapBytes(size),
+      0,
+    );
+  const wanted = (distance: number) => {
+    const frames = new Set([target]);
+    if (preparedTarget !== null) frames.add(preparedTarget);
+    frames.add(Math.floor(sample));
+    frames.add(Math.ceil(sample));
+    for (let i = 1; i <= distance; i++) {
+      for (const f of [target + i * direction, target - i * direction])
+        if (f >= 1 && f <= count) frames.add(f);
+      if (preparedTarget !== null)
+        for (const f of [
+          preparedTarget + i * direction,
+          preparedTarget - i * direction,
+        ])
+          if (f >= 1 && f <= count) frames.add(f);
+    }
+    // Preparation shares the existing window; it never creates a second
+    // decoded cache. Keep both centers ahead of their surrounding frames.
+    return [...frames].slice(0, 2 * distance + 1);
+  };
   const cacheRadius = () => {
+    if (cropped) {
+      // Tight frames have different aspect ratios. Reserve the retained pose
+      // plus two decoder allocations before selecting a local cache window.
+      for (let distance = 5; distance >= 1; distance--) {
+        const frames = wanted(distance);
+        const bytes = frames.map((frame) => bitmapBytes(frameSize(frame)));
+        const retained = bitmaps.get(drawn);
+        const retainedBytes =
+          retained && !frames.includes(drawn) ? bitmapBytes(retained) : 0;
+        const reservedDecoders =
+          pendingBytes() + Math.max(0, 2 - decoding.size) * Math.max(...bytes);
+        if (
+          bytes.reduce((total, value) => total + value, 0) +
+            retainedBytes +
+            reservedDecoders <=
+          cropBudget()
+        )
+          return distance;
+      }
+      return 1;
+    }
     const originalRadius = small ? 6 : 12;
     if (paddingTop <= 0) return originalRadius;
     const budget = (small ? 32 : 100) * 1024 * 1024;
@@ -62,23 +154,15 @@ export function createFrameSequence({
     );
   };
   let radius = cacheRadius();
-  const frameHeight = (frame: number) =>
-    frame <= expandedThrough
-      ? height
-      : Math.round((width * baseHeight) / baseWidth);
   const frameOffset = (frame: number) =>
-    frame <= expandedThrough ? 0 : Math.round((width * paddingTop) / baseWidth);
-  const wanted = (distance: number) => {
-    const frames = new Set([target, Math.floor(sample), Math.ceil(sample)]);
-    for (let i = 1; i <= distance; i++)
-      for (const f of [target + i * direction, target - i * direction])
-        if (f >= 1 && f <= count) frames.add(f);
-    return [...frames];
-  };
+    cropped || frame <= expandedThrough
+      ? 0
+      : Math.round((width * paddingTop) / baseWidth);
   const reportFailure = (f: number) => {
     failures.set(f, (failures.get(f) ?? 0) + 1);
     retries.set(f, Date.now() + 900);
-    if (f === target && (failures.get(f) ?? 0) >= 2) onUnavailable(true);
+    if ((f === target || f === preparedTarget) && (failures.get(f) ?? 0) >= 2)
+      onUnavailable(true);
     clearTimeout(timer);
     timer = window.setTimeout(() => {
       pumpDownloads();
@@ -87,20 +171,34 @@ export function createFrameSequence({
   };
   const draw = () => {
     raf = 0;
-    if (disposed || !active || !context) return;
+    if (disposed || !active || !started || !context) return;
     const key = bitmaps.has(target)
       ? target
-      : [...bitmaps.keys()].sort(
-          (a, b) => Math.abs(a - target) - Math.abs(b - target),
-        )[0];
+      : preparedTarget !== null
+        ? drawn
+        : [...bitmaps.keys()]
+            .filter((frame) =>
+              // A decode may finish ahead of the requested pose. Showing it
+              // would make the target snap backwards when its decode finishes.
+              // Approach the target from the visible pose, allowing real reverse
+              // seeks immediately, without letting completion order overshoot.
+              drawn < 0
+                ? (frame - target) * direction <= 0
+                : frame >= Math.min(drawn, target) &&
+                  frame <= Math.max(drawn, target),
+            )
+            .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
     const image = bitmaps.get(key);
     const signature = String(key);
     if (!image || signature === drawnSignature || Math.abs(key - target) > 4)
       return;
     // Expanded and original assets share one canvas. Keep the original image
     // region at the same offset even when adjacent frames have different sizes.
-    if (canvas.width !== width) canvas.width = width;
-    if (canvas.height !== height) canvas.height = height;
+    const canvasWidth = cropped ? image.width : width,
+      canvasHeight = cropped ? image.height : height;
+    if (canvas.width !== canvasWidth) canvas.width = canvasWidth;
+    if (canvas.height !== canvasHeight) canvas.height = canvasHeight;
+    positionCrop(key);
     // Different mechanical poses must never overlap: paint one opaque frame
     // after clearing the canvas. Camera transforms remain continuous outside.
     context.globalAlpha = 1;
@@ -123,6 +221,7 @@ export function createFrameSequence({
   };
   const pumpDecode = () => {
     if (disposed || !active) return;
+    if (cropped) radius = cacheRadius();
     const desired = wanted(radius);
     for (const [key, image] of bitmaps)
       if (!desired.includes(key) && key !== drawn) {
@@ -140,19 +239,28 @@ export function createFrameSequence({
         (retries.get(frame) ?? 0) > Date.now()
       )
         continue;
-      decoding.add(frame);
+      const size = frameSize(frame);
+      if (
+        cropped &&
+        [...bitmaps.values()].reduce(
+          (bytes, image) => bytes + bitmapBytes(image),
+          pendingBytes() + bitmapBytes(size),
+        ) > cropBudget()
+      )
+        continue;
+      decoding.set(frame, size);
       void createImageBitmap(blob, {
-        resizeWidth: width,
-        resizeHeight: frameHeight(frame),
+        resizeWidth: size.width,
+        resizeHeight: size.height,
         resizeQuality: 'high',
       })
         .then((image) => {
           if (
             disposed ||
             !active ||
-            image.width !== width ||
-            image.height !== frameHeight(frame) ||
-            Math.abs(frame - target) > radius
+            image.width !== frameSize(frame).width ||
+            image.height !== frameSize(frame).height ||
+            !wanted(radius).includes(frame)
           ) {
             image.close();
             return;
@@ -160,7 +268,10 @@ export function createFrameSequence({
           bitmaps.set(frame, image);
           failures.delete(frame);
           retries.delete(frame);
-          requestDraw();
+          // Only seek changes presentation. A prepared bitmap, including its
+          // neighbors, can become ready without advancing the visible pose.
+          if (started && (preparedTarget === null || frame === target))
+            requestDraw();
         })
         .catch(() => {
           if (!disposed) {
@@ -214,12 +325,32 @@ export function createFrameSequence({
     }
   };
   return {
+    isReady(frame: number) {
+      if (disposed || !Number.isFinite(frame)) return false;
+      return bitmaps.has(Math.round(Math.max(1, Math.min(count, frame))));
+    },
+    prepare(frame: number) {
+      if (disposed || !Number.isFinite(frame)) return;
+      const next = Math.round(Math.max(1, Math.min(count, frame)));
+      if (next === preparedTarget) return;
+      preparedTarget = next;
+      if ((failures.get(next) ?? 0) >= 2) onUnavailable(true);
+      // The caller can seek a ready bitmap immediately. Avoid rearranging
+      // the cache twice in the same tick before that seek consumes the target.
+      if (bitmaps.has(next)) return;
+      pumpDecode();
+      pumpDownloads();
+    },
     resize(portrait: boolean) {
       if (disposed || small === portrait) return;
       small = portrait;
       width = small ? 640 : 1000;
       height = Math.round((width * (baseHeight + paddingTop)) / baseWidth);
       radius = cacheRadius();
+      // Keep the currently painted crop in the same logical position while
+      // its new-resolution bitmap decodes; do not stretch it to the actor.
+      restoreCanvasStyle();
+      positionCrop(drawn);
       for (const image of bitmaps.values()) image.close();
       bitmaps.clear();
       drawn = -1;
@@ -233,6 +364,7 @@ export function createFrameSequence({
         previousTarget = target;
       sample = Math.max(1, Math.min(count, Number.isFinite(frame) ? frame : 1));
       target = Math.round(sample);
+      if (preparedTarget === target) preparedTarget = null;
       const changed =
         !started ||
         target !== previousTarget ||
@@ -283,6 +415,7 @@ export function createFrameSequence({
       for (const image of bitmaps.values()) image.close();
       blobs.clear();
       bitmaps.clear();
+      restoreCanvasStyle();
     },
   };
 }

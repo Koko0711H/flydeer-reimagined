@@ -27,21 +27,21 @@ export const navigation = [
 export const products = [
   {
     id: 'silent',
-    name: copy('静音型发电机组', 'Silent generator sets'),
+    name: copy('静音箱发电机组', 'Silent generator sets'),
     line: 'SILENT POWER',
     range: '20–600 kW',
     desc: copy(
-      '隔声箱体、复合消声与多门维护设计，为关注声音、空间和户外防护的场所提供动力。',
-      'Acoustic enclosure, exhaust silencing and multi-door access for sites where sound, space and outdoor protection matter.',
+      '隔声材料与复合消声器降低机械和排气噪声，紧凑箱体兼顾户外防护，多门设计便于日常检查与维护。',
+      'Acoustic materials and a compound silencer reduce mechanical and exhaust noise. A compact enclosure provides outdoor protection, with multiple doors for routine inspection and service.',
     ),
     uses: copy(
-      '酒店 / 医疗 / 住宅备用',
-      'Hospitality / Healthcare / Residential backup',
+      '空间受限安装 / 户外用电 / 租赁工程',
+      'Space-limited installations / Outdoor sites / Rental and engineering',
     ),
     features: [
-      copy('静音箱式结构', 'Acoustic enclosure'),
-      copy('可选 ATS 切换', 'Optional ATS transfer'),
-      copy('远程监控选配', 'Optional remote monitoring'),
+      copy('隔声与复合消声', 'Acoustic enclosure and silencing'),
+      copy('多门检修通道', 'Multi-door service access'),
+      copy('紧凑户外箱体', 'Compact outdoor enclosure'),
     ],
   },
   {
@@ -62,21 +62,41 @@ export const products = [
   },
   {
     id: 'open-frame-small',
-    name: copy('标准开架机组', 'Standard open sets'),
-    line: 'ESSENTIAL POWER',
-    range: '500 kW · 50 Hz',
+    name: copy('开架发电机组', 'Open-frame generator sets'),
+    line: 'OPEN-FRAME POWER',
+    range: '20–2,000 kW',
     desc: copy(
-      '从常规备用到现场作业，以清晰的结构和便捷的维护，构建实用动力方案。',
-      'From standby supply to field operations, a practical power platform with an accessible layout.',
+      '柴油机、散热器、油箱、消声器、发电机与控制系统集成为开放式机组，气流畅通，关键部件易于检修，适用于常用或备用供电。',
+      'Engine, radiator, fuel tank, silencer, alternator and controls form an open-frame set. Open airflow and accessible components support prime or standby power.',
     ),
     uses: copy(
-      '厂房 / 设备配套 / 现场供电',
-      'Workshops / Equipment / Site power',
+      '工业 / 工程施工 / 公共设施',
+      'Industry / Construction / Public facilities',
     ),
     features: [
-      copy('标准开架布局', 'Standard open layout'),
-      copy('便于维护保养', 'Service-friendly access'),
-      copy('配套方案咨询', 'Configuration support'),
+      copy('开放气流散热', 'Open airflow cooling'),
+      copy('关键部件便于检修', 'Accessible service points'),
+      copy('常用与备用供电', 'Prime and standby power'),
+    ],
+  },
+  {
+    id: 'container',
+    name: copy('集装箱发电机组', 'Containerized generator sets'),
+    line: 'INTEGRATED POWER',
+    range: 'Project-specific',
+    rangeLabel: copy('按项目配置', 'Project-specific'),
+    desc: copy(
+      '将发电、冷却、排气与控制系统集成于可运输的集装箱内，结合现场需求配置设备防护、检修门与通风路径，便于运输与安装。',
+      'Generation, cooling, exhaust and controls are integrated in a transportable container. Equipment protection, service doors and airflow paths are configured for transport and on-site installation.',
+    ),
+    uses: copy(
+      '户外安装 / 集成供电 / 项目部署',
+      'Outdoor installation / Integrated power / Project deployment',
+    ),
+    features: [
+      copy('发电与辅助系统集成', 'Integrated power systems'),
+      copy('钢结构箱体防护', 'Protective steel enclosure'),
+      copy('专用检修门与通风路径', 'Dedicated access and airflow paths'),
     ],
   },
   {
@@ -118,6 +138,15 @@ export const products = [
     ],
   },
 ];
+// Homepage and showroom families. Keep legacy product routes in `products`.
+// The open-frame-small ID retains the user's refined red generator assets.
+export const storyProducts = ['open-frame-small', 'silent', 'container'].map(
+  (id) => {
+    const product = products.find((item) => item.id === id);
+    if (!product) throw new Error(`Missing story product: ${id}`);
+    return product;
+  },
+);
 export const cases = [
   {
     id: 'airport-terminal',

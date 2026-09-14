@@ -11,7 +11,7 @@ const source = stripTypeScriptTypes(
   'function createFrameSequence',
 );
 
-function harness(t, count = 24, framing) {
+function harness(t, count = 24, framing, options = {}) {
   let now = 0,
     nextId = 0;
   const timers = new Map(),
@@ -20,7 +20,8 @@ function harness(t, count = 24, framing) {
     decodes = [],
     images = [],
     paints = [],
-    reports = [];
+    reports = [],
+    unavailable = [];
   const stack = [];
   const context = {
     globalAlpha: 1,
@@ -47,7 +48,20 @@ function harness(t, count = 24, framing) {
       });
     },
   };
-  const canvas = { width: 300, height: 150, getContext: () => context };
+  const canvas = {
+    width: 300,
+    height: 150,
+    style: { position: '', left: '', top: '', width: '', height: '' },
+    getContext: () => context,
+  };
+  const decodeMemory = [];
+  const residentBytes = () =>
+    images
+      .filter((image) => !image.closed)
+      .reduce((total, image) => total + image.width * image.height * 4, 0) +
+    decodes
+      .filter((entry) => entry.pending)
+      .reduce((total, entry) => total + entry.width * entry.height * 4, 0);
   const setTimer = (callback, delay) => {
     const id = ++nextId;
     timers.set(id, { callback, due: now + delay });
@@ -84,6 +98,11 @@ function harness(t, count = 24, framing) {
             request.pending = false;
             resolve({ ok: true, blob: async () => ({ frame }) });
           },
+          fail() {
+            if (!request.pending) return;
+            request.pending = false;
+            reject(new Error('Frame unavailable'));
+          },
         };
         signal.addEventListener('abort', () => {
           if (!request.pending) return;
@@ -102,6 +121,7 @@ function harness(t, count = 24, framing) {
         const decode = {
           frame: blob.frame,
           width: options.resizeWidth,
+          height: options.resizeHeight,
           pending: true,
           finish() {
             if (!decode.pending) return;
@@ -120,6 +140,7 @@ function harness(t, count = 24, framing) {
           },
         };
         decodes.push(decode);
+        decodeMemory.push(residentBytes());
       });
     },
   });
@@ -128,8 +149,9 @@ function harness(t, count = 24, framing) {
     count,
     prefix: '/frames/',
     framing,
+    ...options,
     onFrame: (frame, stats) => reports.push({ frame, ...stats }),
-    onUnavailable() {},
+    onUnavailable: (failed) => unavailable.push(failed),
   });
   const microtasks = async () => {
     for (let i = 0; i < 12; i++) await Promise.resolve();
@@ -196,12 +218,15 @@ function harness(t, count = 24, framing) {
     images,
     paints,
     reports,
+    unavailable,
     timers,
     rafs,
     advance,
     flushRAF,
     finishAll,
     microtasks,
+    decodeMemory,
+    residentBytes,
   };
 }
 
@@ -320,6 +345,69 @@ test('a late target frame replaces the available fallback with one opaque frame'
   assert.equal(h.paints.length, before + 1);
   assert.equal(h.reports.at(-1).frame, 13);
   assert.equal(h.rafs.size, 0);
+});
+
+for (const { name, start, sample, ahead, behind, target } of [
+  {
+    name: 'forward',
+    start: 1,
+    sample: 12.7,
+    ahead: 14,
+    behind: 12,
+    target: 13,
+  },
+  {
+    name: 'reverse',
+    start: 20,
+    sample: 12.3,
+    ahead: 11,
+    behind: 13,
+    target: 12,
+  },
+]) {
+  test(`${name} playback never overshoots when adjacent frames decode out of order`, async (t) => {
+    const h = harness(t);
+    h.player.setActive(false);
+    h.player.seek(start);
+    h.player.seek(sample);
+    h.player.setActive(true);
+    for (const frame of [ahead, behind, target]) {
+      h.requests.find((entry) => entry.frame === frame).finish();
+      await h.microtasks();
+      h.decodes.find((entry) => entry.frame === frame).finish();
+      await h.microtasks();
+      h.flushRAF();
+    }
+    assert.deepEqual(
+      h.reports.map((entry) => entry.frame),
+      [behind, target],
+      'decoding an ahead-of-target bitmap must not introduce a reverse snap',
+    );
+  });
+}
+
+test('a distant seek holds its previous pose until a frame on the way to the target is ready', async (t) => {
+  const h = harness(t, 60);
+  h.player.seek(10);
+  await h.finishAll();
+  h.flushRAF();
+  h.player.seek(40);
+  h.decodes.find((entry) => entry.pending && entry.frame === 41).finish();
+  await h.microtasks();
+  h.flushRAF();
+  assert.equal(h.reports.at(-1).frame, 10);
+  h.decodes.find((entry) => entry.pending && entry.frame === 40).finish();
+  await h.microtasks();
+  h.flushRAF();
+  assert.equal(h.reports.at(-1).frame, 40);
+  await h.finishAll();
+  h.player.seek(39);
+  h.flushRAF();
+  assert.equal(
+    h.reports.at(-1).frame,
+    39,
+    'an actual reverse seek applies immediately',
+  );
 });
 
 test('deactivation cancels drawing and activation reuses blobs with a clear still frame', async (t) => {
@@ -553,4 +641,278 @@ test('expanded cache budgets include the retained last frame during a distant se
     assert.equal(h.reports.at(-1).frame, 200);
     assert.equal(h.rafs.size, 0);
   }
+});
+
+test('tight frames retain native detail and their canonical placement in both directions', async (t) => {
+  const crops = Array.from({ length: 24 }, () => [100, 71.4, 500, 357]);
+  const imageSizes = Array.from({ length: 24 }, () => [2000, 1428]);
+  crops[11] = [300, 180, 400, 200];
+  imageSizes[11] = [2400, 1200];
+  crops[12] = [310, 100, 200, 400];
+  imageSizes[12] = [800, 1600];
+  crops[13] = [100, 100, 200, 100];
+  imageSizes[13] = [400, 200];
+  const h = harness(t, 24, undefined, { crops, imageSizes });
+  for (const frame of [12, 13, 12]) {
+    h.player.seek(frame);
+    await h.finishAll();
+    h.flushRAF();
+    const expectedSize = frame === 12 ? [2000, 1000] : [800, 1600];
+    assert.deepEqual([h.canvas.width, h.canvas.height], expectedSize);
+    const [x, y, width, height] = crops[frame - 1];
+    assert.deepEqual(h.canvas.style, {
+      position: 'absolute',
+      left: `${(x / 1000) * 100}%`,
+      top: `${(y / 714) * 100}%`,
+      width: `${(width / 1000) * 100}%`,
+      height: `${(height / 714) * 100}%`,
+    });
+    assert.deepEqual(
+      [h.paints.at(-1)[0].width, h.paints.at(-1)[0].height],
+      expectedSize,
+      'canvas and bitmap sizes agree, with no second downsample during paint',
+    );
+    assert.equal(h.paints.at(-1)[0].y, 0);
+  }
+  const desktopCropStyle = { ...h.canvas.style };
+  h.player.resize(true);
+  assert.deepEqual(
+    h.canvas.style,
+    desktopCropStyle,
+    'the still-visible desktop crop keeps its placement while the mobile decode is pending',
+  );
+  await h.finishAll();
+  h.flushRAF();
+  assert.deepEqual([h.canvas.width, h.canvas.height], [960, 480]);
+  h.player.seek(14);
+  await h.finishAll();
+  h.flushRAF();
+  assert.deepEqual(
+    [h.canvas.width, h.canvas.height],
+    [400, 200],
+    'a source smaller than the display limit is never upsampled',
+  );
+  const paints = h.paints.length;
+  h.player.seek(14.1);
+  h.flushRAF();
+  assert.equal(h.paints.length, paints, 'an unchanged bitmap is not repainted');
+  h.player.dispose();
+  assert.deepEqual(h.canvas.style, {
+    position: '',
+    left: '',
+    top: '',
+    width: '',
+    height: '',
+  });
+});
+
+test('tight-frame budgets include variable-size cached images, a retained pose, and pending decodes', async (t) => {
+  const crops = Array.from({ length: 80 }, () => [100, 100, 600, 300]);
+  const imageSizes = Array.from({ length: 80 }, (_, index) =>
+    index % 3 === 0
+      ? [2000, 2000]
+      : index % 3 === 1
+        ? [2000, 1000]
+        : [600, 2000],
+  );
+  for (const mobile of [false, true]) {
+    const h = harness(t, 80, undefined, { crops, imageSizes });
+    if (mobile) h.player.resize(true);
+    for (const frame of [30, 60, 31, 59, 2, 79]) {
+      h.player.seek(frame);
+      await h.finishAll();
+      assert.ok(
+        h.residentBytes() <= (mobile ? 24 : 100) * 1024 * 1024,
+        'retained previous image and new cache stay within the budget before repaint',
+      );
+      h.flushRAF();
+      assert.equal(h.reports.at(-1).frame, frame);
+    }
+    assert.ok(
+      h.decodeMemory.every(
+        (bytes) => bytes <= (mobile ? 24 : 100) * 1024 * 1024,
+      ),
+      'every decode allocation includes both in-flight and retained bitmap memory',
+    );
+    assert.equal(
+      h.requests.length,
+      80,
+      'distant seeks never refetch encoded assets',
+    );
+  }
+});
+
+test('tight-frame resizing rejects late desktop decodes and disposal releases pending work', async (t) => {
+  const crops = Array.from({ length: 24 }, () => [100, 100, 500, 400]);
+  const imageSizes = Array.from({ length: 24 }, () => [2000, 1600]);
+  const h = harness(t, 24, undefined, { crops, imageSizes });
+  h.player.seek(12);
+  for (const frame of [12, 13]) {
+    h.requests.find((request) => request.frame === frame).finish();
+    await h.microtasks();
+  }
+  assert.equal(h.decodes.filter((decode) => decode.pending).length, 2);
+  h.player.resize(true);
+  await h.finishAll();
+  h.flushRAF();
+  assert.deepEqual([h.canvas.width, h.canvas.height], [960, 768]);
+  assert.ok(
+    h.images
+      .filter((image) => image.width === 2000)
+      .every((image) => image.closed === 1),
+  );
+  assert.ok(h.paints.every((paint) => paint[0].width === 960));
+  assert.ok(h.residentBytes() <= 24 * 1024 * 1024);
+  h.player.resize(false);
+  h.player.dispose();
+  await h.finishAll();
+  h.flushRAF();
+  assert.equal(h.residentBytes(), 0);
+  assert.deepEqual(h.canvas.style, {
+    position: '',
+    left: '',
+    top: '',
+    width: '',
+    height: '',
+  });
+});
+
+test('readiness is read-only and preparation cannot present a frame before seek', async (t) => {
+  const h = harness(t, 60);
+  assert.equal(h.player.isReady(40), false);
+  assert.equal(h.player.isReady(NaN), false);
+  assert.equal(h.requests.length, 0);
+  h.player.prepare(40);
+  assert.deepEqual(
+    h.requests.map((request) => request.frame),
+    [1, 40, 2],
+  );
+  await h.finishAll();
+  h.flushRAF();
+  assert.equal(h.player.isReady(40.1), true);
+  assert.equal(h.player.isReady(1), true);
+  assert.equal(
+    h.paints.length,
+    0,
+    'preparing a bitmap does not initiate presentation',
+  );
+  assert.equal(h.reports.length, 0);
+  assert.equal(h.rafs.size, 0);
+  h.player.seek(40);
+  h.flushRAF();
+  assert.equal(h.reports.at(-1).frame, 40);
+  h.player.dispose();
+  assert.equal(h.player.isReady(40), false);
+  const requestCount = h.requests.length;
+  h.player.prepare(20);
+  assert.equal(h.requests.length, requestCount);
+});
+
+test('a replacement preparation discards late obsolete decodes while retaining the current pose', async (t) => {
+  const h = harness(t, 80);
+  h.player.seek(10);
+  await h.finishAll();
+  h.flushRAF();
+  const paintCount = h.paints.length;
+  h.player.prepare(40);
+  assert.ok(h.decodes.some((decode) => decode.pending && decode.frame === 40));
+  const pendingCount = h.decodes.length;
+  h.player.prepare(40.2);
+  assert.equal(
+    h.decodes.length,
+    pendingCount,
+    'the same prepared integer is idempotent',
+  );
+  h.player.prepare(60);
+  await h.finishAll();
+  h.flushRAF();
+  assert.equal(h.player.isReady(60), true);
+  assert.equal(h.player.isReady(40), false);
+  assert.equal(
+    h.player.isReady(10),
+    true,
+    'the current target remains decoded',
+  );
+  assert.ok(
+    h.images
+      .filter((image) => image.frame === 40)
+      .every((image) => image.closed === 1),
+  );
+  assert.equal(
+    h.paints.length,
+    paintCount,
+    'preparation must not advance the displayed pose',
+  );
+  assert.equal(h.reports.at(-1).frame, 10);
+  assert.ok(
+    h.images.filter((image) => !image.closed).length <= 26,
+    'both centers share one legacy cache window',
+  );
+  h.player.seek(60);
+  h.flushRAF();
+  assert.equal(h.reports.at(-1).frame, 60);
+  await h.finishAll();
+  h.player.seek(59);
+  h.flushRAF();
+  assert.equal(
+    h.reports.at(-1).frame,
+    59,
+    'reverse seeking still presents immediately',
+  );
+  assert.equal(h.requests.length, 80);
+});
+
+test('preparing a distant tight bitmap shares the current cache and decoder memory budget', async (t) => {
+  const crops = Array.from({ length: 80 }, () => [100, 100, 600, 300]);
+  const imageSizes = Array.from({ length: 80 }, (_, index) =>
+    index % 2 ? [2000, 2000] : [2000, 1000],
+  );
+  for (const mobile of [false, true]) {
+    const h = harness(t, 80, undefined, { crops, imageSizes });
+    if (mobile) h.player.resize(true);
+    h.player.seek(10);
+    await h.finishAll();
+    h.flushRAF();
+    const paintCount = h.paints.length;
+    for (const frame of [40, 60, 30, 70]) {
+      h.player.prepare(frame);
+      await h.finishAll();
+      h.flushRAF();
+      assert.equal(h.player.isReady(frame), true);
+      assert.equal(h.player.isReady(10), true);
+      assert.equal(h.paints.length, paintCount);
+    }
+    assert.ok(
+      h.decodeMemory.every(
+        (bytes) => bytes <= (mobile ? 24 : 100) * 1024 * 1024,
+      ),
+    );
+    h.player.seek(70);
+    h.flushRAF();
+    assert.equal(h.reports.at(-1).frame, 70);
+  }
+});
+
+test('a repeatedly failing prepared frame exposes the existing retry state and can recover', async (t) => {
+  const h = harness(t, 60);
+  h.player.setActive(false);
+  h.player.seek(10);
+  h.player.prepare(40);
+  h.player.setActive(true);
+  h.requests.find((request) => request.frame === 40).fail();
+  await h.microtasks();
+  assert.equal(h.unavailable.includes(true), false);
+  await h.finishAll();
+  h.advance(950);
+  h.requests.find((request) => request.pending && request.frame === 40).fail();
+  await h.microtasks();
+  assert.equal(h.unavailable.at(-1), true);
+  assert.equal(h.player.isReady(40), false);
+  h.player.retry();
+  await h.finishAll();
+  assert.equal(h.player.isReady(40), true);
+  h.player.seek(40);
+  h.flushRAF();
+  assert.equal(h.reports.at(-1).frame, 40);
+  assert.equal(h.unavailable.at(-1), false);
 });

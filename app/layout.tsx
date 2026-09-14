@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'FRS POWER 福瑞斯 | 让动力，走得更远',
   icons: { icon: '/media/frs-logo.png' },
   description:
-    '探索福瑞斯的静音型、开架型、移动拖车发电机组与高压配电系统。从产品选型到项目现场的动力解决方案。',
+    '探索福瑞斯的开架、静音箱与集装箱发电机组。从产品选型、制造吊装到装车交付的动力解决方案。',
 };
 
 export default function RootLayout({

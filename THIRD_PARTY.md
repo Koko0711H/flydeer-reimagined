@@ -22,7 +22,7 @@ Framework and UI foundation: Sites scaffold, Vinext/React, Base UI and shadcn. T
 
 ## FRS POWER identity and delivery sequence
 
-The FRS POWER logo is supplied by the user. The generator mesh and factory/product photographs come from the existing authorized company asset library. The crane rig, loading platform, shipping container, truck, camera animation and rendered WebP sequences were newly created for this website in Blender. No reference-site models, frames, textures or runtime code are included. Editable Blender scenes and render scripts are retained separately from the public website.
+The FRS POWER logo is supplied by the user. Factory/product photographs and the other product models come from the existing authorized company asset library. On 2026-09-10, the standard open-frame generator (`open-frame-small`) was replaced with the user-provided `发电机组_四视图细节优化.blend`; its evaluated geometry and materials are used for the compressed GLB, product orbit film, story keyframes and refreshed delivery sequence. The original Blender source is preserved separately. The crane rig, loading platform, shipping container, truck, camera animation and rendered WebP sequences were newly created for this website in Blender. No reference-site models, frames, textures or runtime code are included. Editable Blender scenes and render scripts are retained separately from the public website.
 
 ## User-provided company brochure
 

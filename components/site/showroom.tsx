@@ -1,21 +1,31 @@
 'use client';
 import { lazy, Suspense, useSyncExternalStore, useState } from 'react';
 import { Box, ArrowUpRight } from 'lucide-react';
-import { products } from '@/lib/content';
+import { storyProducts } from '@/lib/content';
 import { useLanguage, subscribeLocation } from './provider';
 import { Film } from './media';
 import { ContactBand } from './chrome';
 const ModelViewer = lazy(() => import('./model-viewer'));
 function readModel() {
-  const query = new URLSearchParams(location.search).get('model');
-  return products.some((p) => p.id === query) ? query! : 'silent';
+  const params = new URLSearchParams(location.search);
+  for (const candidate of [params.get('model'), params.get('product')]) {
+    const id = candidate === 'open-frame' ? 'open-frame-small' : candidate;
+    const selected = storyProducts.find((p) => p.id === id);
+    if (selected) return selected.id;
+  }
+  return 'open-frame-small';
 }
 
 export function ShowroomPage() {
   const { lang } = useLanguage();
-  const id = useSyncExternalStore(subscribeLocation, readModel, () => 'silent');
+  const id = useSyncExternalStore(
+    subscribeLocation,
+    readModel,
+    () => 'open-frame-small',
+  );
   const [load, setLoad] = useState(false);
-  const selected = products.find((p) => p.id === id)!;
+  const selected = storyProducts.find((p) => p.id === id)!;
+  const range = selected.rangeLabel?.[lang] ?? selected.range;
   return (
     <main id="main">
       <section className="showroom">
@@ -30,8 +40,8 @@ export function ShowroomPage() {
           </div>
           <p>
             {lang === 'zh'
-              ? '先看产品影像，也可以打开三维模型，自由查看设备布局。产品模型仅作外观展示。'
-              : 'Explore product films, or open a 3D model to view the equipment layout. Product models illustrate appearance; please refer to the confirmed configuration drawings.'}
+              ? '选择开架、静音箱或集装箱机组，查看外观预览，也可以打开三维模型，自由查看设备布局。产品模型仅作外观展示。'
+              : 'Choose an open, silent or container generator, then explore the preview or open its 3D model. Product models illustrate appearance; please refer to the confirmed configuration drawings.'}
           </p>
         </div>
         <div className="showroom-layout">
@@ -39,20 +49,20 @@ export function ShowroomPage() {
             className="model-selector"
             aria-label={lang === 'zh' ? '选择产品' : 'Select product'}
           >
-            {products.map((p) => (
+            {storyProducts.map((p) => (
               <button
                 key={p.id}
                 aria-pressed={id === p.id}
                 onClick={() => {
-                  setLoad(false);
                   const url = new URL(location.href);
                   url.searchParams.set('model', p.id);
+                  url.searchParams.set('product', p.id);
                   history.replaceState(null, '', url);
                   window.dispatchEvent(new Event('flydeer:location'));
                 }}
               >
                 {p.name[lang]}
-                <strong>{p.range}</strong>
+                <strong>{p.rangeLabel?.[lang] ?? p.range}</strong>
               </button>
             ))}
           </div>
@@ -76,7 +86,15 @@ export function ShowroomPage() {
                 </Suspense>
               ) : (
                 <>
-                  <Film src={`/media/products/${id}.mp4`} controls />
+                  {id === 'open-frame-small' ? (
+                    <Film src={`/media/products/${id}.mp4`} controls />
+                  ) : (
+                    <img
+                      src={`/media/story/${id}/poster.webp`}
+                      className="journey-fallback"
+                      alt={selected.name[lang]}
+                    />
+                  )}
                   <div className="model-launch">
                     <button
                       className="pill primary"
@@ -87,8 +105,8 @@ export function ShowroomPage() {
                     </button>
                     <p>
                       {lang === 'zh'
-                        ? '按需加载 · 约 3–14 MB · 支持拖动与键盘'
-                        : 'Loads on request · Approx. 3–14 MB · Drag and keyboard controls'}
+                        ? '按需加载 · 支持拖动与键盘'
+                        : 'Loads on request · Drag and keyboard controls'}
                     </p>
                   </div>
                 </>
@@ -96,7 +114,7 @@ export function ShowroomPage() {
             </div>
             <div className="showroom-foot">
               <span>
-                {selected.name[lang]} / {selected.range}
+                {selected.name[lang]} / {range}
               </span>
               <a className="text-link" href={`/products/${id}?lang=${lang}`}>
                 {lang === 'zh' ? '查看产品信息' : 'Product information'}

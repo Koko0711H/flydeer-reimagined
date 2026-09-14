@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight, ArrowUp, Menu, X, Phone, Mail } from 'lucide-react';
 import {
@@ -11,7 +11,8 @@ import {
   SheetClose,
 } from '@/components/ui/sheet';
 import { contact, navigation } from '@/lib/content';
-import { useLanguage } from './provider';
+import { useLanguage, subscribeLocation } from './provider';
+import { storyProductFromLocation } from '@/lib/story-variants';
 import { scrollPageTo } from './scroll';
 
 const storyNavigation = [
@@ -21,10 +22,17 @@ const storyNavigation = [
   { id: 'industries', zh: '行业应用', en: 'Industries' },
   { id: 'cases', zh: '现场应用', en: 'Applications' },
 ];
+const readStoryProduct = () =>
+  storyProductFromLocation(location.pathname, location.search);
 
 export function Header() {
   const { lang, setLang } = useLanguage();
   const pathname = usePathname();
+  const product = useSyncExternalStore(
+    subscribeLocation,
+    readStoryProduct,
+    () => null,
+  );
   const [open, setOpen] = useState(false);
   const [chapter, setChapter] = useState('start');
   useEffect(() => {
@@ -34,7 +42,9 @@ export function Header() {
     return () => window.removeEventListener('frs:chapter', update);
   }, []);
   const storyHref = (id: string) =>
-    pathname === '/' ? `#${id}` : `/?lang=${lang}#${id}`;
+    pathname === '/'
+      ? `#${id}`
+      : `/?lang=${lang}${product ? `&product=${product}` : ''}#${id}`;
   const goToChapter = (
     event: React.MouseEvent<HTMLAnchorElement>,
     id: string,
@@ -51,7 +61,10 @@ export function Header() {
     if (!node) return;
     event.preventDefault();
     setOpen(false);
-    history.pushState(null, '', `?lang=${lang}#${id}`);
+    const url = new URL(location.href);
+    url.searchParams.set('lang', lang);
+    url.hash = id;
+    history.pushState(history.state, '', url);
     // Wait for the menu's scroll lock to be released before asking Lenis to seek.
     requestAnimationFrame(() =>
       requestAnimationFrame(() =>

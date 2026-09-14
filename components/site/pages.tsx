@@ -7,13 +7,26 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { products, contact } from '@/lib/content';
+import { products, storyProducts, contact } from '@/lib/content';
 import { useLanguage } from './provider';
 import { Film } from './media';
 import { ProcessStory } from './sections';
 import { brochure } from '@/lib/brochure';
 import { EngineCatalog } from './engine-catalog';
 import { ContactBand } from './chrome';
+
+function ProductVisual({ id, name }: { id: string; name: string }) {
+  return id === 'silent' || id === 'container' ? (
+    <img
+      src={`/media/story/${id}/poster.webp`}
+      className="journey-fallback"
+      style={{ maxHeight: 350 }}
+      alt={name}
+    />
+  ) : (
+    <Film src={`/media/products/${id}.mp4`} />
+  );
+}
 
 export function ProductsPage() {
   const { lang } = useLanguage();
@@ -38,20 +51,20 @@ export function ProductsPage() {
         </h1>
         <p>
           {lang === 'zh'
-            ? '从静音备用到工程供电，从移动电源到高压配电。按实际应用选择产品，进一步沟通设备配置。'
-            : 'From enclosed standby sets to industrial generation, mobile power and distribution. Explore the range, then discuss your configuration.'}
+            ? '开架、静音箱与集装箱发电机组。按实际应用选择产品，进一步沟通设备配置。'
+            : 'Open-frame, silent and containerized generator sets. Choose a product type for your application, then discuss your configuration.'}
         </p>
       </section>
       <section className="product-catalog wrap">
-        {products.map((p) => (
+        {storyProducts.map((p) => (
           <article className="catalog-card" key={p.id} data-reveal>
             <div className="catalog-film">
-              <Film src={`/media/products/${p.id}.mp4`} />
+              <ProductVisual id={p.id} name={p.name[lang]} />
             </div>
             <div className="catalog-card-copy">
               <p className="eyebrow">{p.line}</p>
               <h2>{p.name[lang]}</h2>
-              <p className="range">{p.range}</p>
+              <p className="range">{p.rangeLabel?.[lang] ?? p.range}</p>
               <p>{p.desc[lang]}</p>
               <a className="text-link" href={`/products/${p.id}?lang=${lang}`}>
                 {lang === 'zh' ? '查看产品' : 'View product'}
@@ -107,12 +120,14 @@ export function ProductDetail({ id }: { id: string }) {
           </div>
           <div className="detail-body">
             <div>
-              <Film src={`/media/products/${id}.mp4`} />
+              <ProductVisual id={id} name={product.name[lang]} />
             </div>
             <div className="detail-copy">
               <p className="eyebrow">{product.line}</p>
               <h1>{product.name[lang]}</h1>
-              <p className="range">{product.range}</p>
+              <p className="range">
+                {product.rangeLabel?.[lang] ?? product.range}
+              </p>
               <p>{product.desc[lang]}</p>
               <div className="detail-actions">
                 <a
@@ -406,7 +421,7 @@ export function ServicePage() {
           <label>
             {lang === 'zh' ? '关注的产品' : 'Product interest'}
             <select name="product">
-              {products.map((p) => (
+              {storyProducts.map((p) => (
                 <option key={p.id} value={p.name[lang]}>
                   {p.name[lang]}
                 </option>

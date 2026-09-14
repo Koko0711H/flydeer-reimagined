@@ -8,6 +8,7 @@ const ids = [
   'silent',
   'open-frame',
   'open-frame-small',
+  'container',
   'mobile',
   'high-voltage',
 ];
@@ -22,13 +23,28 @@ const routes = [
   '404',
   ...ids.map((id) => `products/${id}`),
 ];
-test('all 13 static routes have content and a branded title', async () => {
+test('all 14 static routes have content and a branded title', async () => {
   for (const route of routes) {
     const html = await readFile(path.join(output, `${route}.html`), 'utf8');
     assert.match(html, /<main[^>]+id="main"/);
     assert.match(html, /<title>[^<]*FRS POWER/);
     assert.ok(html.length > 1000);
   }
+});
+test('the homepage offers exactly the three product families and starts with the refined open set', async () => {
+  const html = await readFile(path.join(output, 'index.html'), 'utf8');
+  const selected = [...html.matchAll(/data-product-id="([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(selected, ['open-frame-small', 'silent', 'container']);
+  assert.match(html, /data-product="open-frame-small"/);
+  for (const label of [
+    '开架发电机组',
+    '静音箱发电机组',
+    '集装箱发电机组',
+    '按项目配置',
+  ])
+    assert.ok(html.includes(label));
 });
 test('all emitted local HTML asset and page links resolve', async () => {
   for (const route of routes) {
@@ -70,7 +86,7 @@ test('contact information remains unchanged', async () => {
   ])
     assert.ok(html.includes(expected), `Missing original contact: ${expected}`);
 });
-test('all original models are self-contained GLB files', async () => {
+test('all product models are self-contained GLB files', async () => {
   for (const id of ids) {
     const binary = await readFile(
       path.join(root, `public/media/models/${id}.glb`),

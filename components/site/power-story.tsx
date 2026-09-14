@@ -1,20 +1,30 @@
 'use client';
-import { useEffect, useState, type CSSProperties } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from 'react';
 import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Box,
-  Play,
   X,
 } from 'lucide-react';
-import { cases, contact, products, process } from '@/lib/content';
+import { cases, contact, storyProducts, process } from '@/lib/content';
 import { brochure } from '@/lib/brochure';
-import { useLanguage } from './provider';
+import { useLanguage, subscribeLocation } from './provider';
+import {
+  isStoryProduct,
+  storyAssetBase,
+  type StoryProductId,
+} from '@/lib/story-variants';
 import { STORY_CHAPTER_HEIGHT } from '@/lib/story-math.mjs';
 import { StoryStage } from './story-stage';
-import { Film } from './media';
 import {
   Dialog,
   DialogContent,
@@ -23,11 +33,26 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 
-// One visual world crosses eight document chapters. The same generator carries
-// the journey; product selection only changes the independent information panel.
+const ModelViewer = lazy(() => import('./model-viewer'));
+function readStoryProduct(): StoryProductId {
+  const selected = new URLSearchParams(location.search).get('product');
+  return isStoryProduct(selected) ? selected : 'open-frame-small';
+}
+// The selected product owns both the information and the entire delivery journey.
 export function PowerStory() {
   const { lang } = useLanguage();
-  const [product, setProduct] = useState(2);
+  const product = useSyncExternalStore(
+    subscribeLocation,
+    readStoryProduct,
+    () => 'open-frame-small' as StoryProductId,
+  );
+  const selectProduct = (selected: StoryProductId) => {
+    if (selected === product) return;
+    const url = new URL(location.href);
+    url.searchParams.set('product', selected);
+    history.replaceState(history.state, '', url);
+    window.dispatchEvent(new Event('flydeer:location'));
+  };
   const [application, setApplication] = useState(0);
   const [industry, setIndustry] = useState(0);
   const [productOpen, setProductOpen] = useState(false);
@@ -44,7 +69,9 @@ export function PowerStory() {
     };
   }, [productOpen, caseOpen]);
   const t = (zh: string, en: string) => (lang === 'zh' ? zh : en);
-  const item = products[product];
+  const item = storyProducts.find((p) => p.id === product)!;
+  const assetBase = storyAssetBase(product);
+  const range = item.rangeLabel?.[lang] ?? item.range;
   const site = cases[application];
   const industries = [
     {
@@ -85,11 +112,16 @@ export function PowerStory() {
       id="main"
       className="power-story"
       data-story-owner="home"
+      data-product={product}
       style={
         { '--chapter-length': `${STORY_CHAPTER_HEIGHT}svh` } as CSSProperties
       }
     >
-      <StoryStage application={site.id} industry={industries[industry].image} />
+      <StoryStage
+        product={product}
+        application={site.id}
+        industry={industries[industry].image}
+      />
       <section
         className="power-chapter power-opening"
         data-chapter="0"
@@ -118,8 +150,8 @@ export function PowerStory() {
           </div>
           <img
             className="power-static-machine"
-            src="/media/story/poster.webp"
-            alt={t('福瑞斯开架发电机组', 'FRS POWER open-frame generator')}
+            src={`${assetBase}/poster.webp`}
+            alt={item.name[lang]}
             width="1400"
             height="1000"
           />
@@ -147,19 +179,29 @@ export function PowerStory() {
               <br />
               <em>{t('从您的需要开始。', 'Built around you.')}</em>
             </h2>
+            <img
+              className="power-static-scene power-product-preview"
+              src={`${assetBase}/frame-0001.webp`}
+              alt={item.name[lang]}
+              width="1400"
+              height="1000"
+              loading="lazy"
+            />
             <fieldset
               className="power-product-list"
               id="product-range"
               aria-label={t('选择产品类型', 'Choose a product type')}
             >
-              {products.map((p, i) => (
+              {storyProducts.map((p) => (
                 <button
                   key={p.id}
-                  onClick={() => setProduct(i)}
-                  aria-pressed={product === i}
+                  onClick={() => selectProduct(p.id as StoryProductId)}
+                  aria-pressed={product === p.id}
+                  aria-controls="selected-product-model"
+                  data-product-id={p.id}
                 >
                   <span>{p.name[lang]}</span>
-                  <small>{p.range}</small>
+                  <small>{p.rangeLabel?.[lang] ?? p.range}</small>
                   <ArrowUpRight size={16} />
                 </button>
               ))}
@@ -170,8 +212,8 @@ export function PowerStory() {
                 className="power-link power-video-button"
                 onClick={() => setProductOpen(true)}
               >
-                <Play size={15} />
-                {t('观看产品演示', 'Watch product film')}
+                <Box size={15} />
+                {t('查看产品模型', 'Explore this model')}
               </button>
               <div className="power-links">
                 <a
@@ -198,18 +240,6 @@ export function PowerStory() {
               </a>
             </div>
           </div>
-          <img
-            className="power-static-scene"
-            src="/media/story/frame-0001.webp"
-            alt={t('标准开架机组', 'Standard open generator')}
-            width="1400"
-            height="1000"
-            loading="lazy"
-          />
-          <div className="power-object-label">
-            <span>OPEN FRAME</span>
-            <span>{t('标准开架机组', 'Standard open generator')}</span>
-          </div>
         </div>
       </section>
       <section
@@ -220,7 +250,7 @@ export function PowerStory() {
         <div className="power-shot">
           <img
             className="power-static-scene"
-            src="/media/story/frame-0026.webp"
+            src={`${assetBase}/frame-0026.webp`}
             alt={t('机组吊装', 'Generator lifting')}
             width="1400"
             height="1000"
@@ -266,7 +296,7 @@ export function PowerStory() {
         <div className="power-shot">
           <img
             className="power-static-scene"
-            src="/media/story/frame-0034.webp"
+            src={`${assetBase}/frame-0034.webp`}
             alt={t('机组正面结构', 'Front of the generator')}
             width="1400"
             height="1000"
@@ -302,7 +332,7 @@ export function PowerStory() {
             </dl>
             <a
               className="power-link"
-              href={`/showroom?lang=${lang}&model=open-frame-small`}
+              href={`/showroom?lang=${lang}&model=${product}`}
             >
               <Box size={18} />
               {t('自由查看每个角度', 'Explore every angle')}
@@ -319,8 +349,8 @@ export function PowerStory() {
         <div className="power-shot">
           <img
             className="power-static-scene"
-            src="/media/story/frame-0076.webp"
-            alt={t('机组装入集装箱', 'Loading the generator')}
+            src={`${assetBase}/frame-0076.webp`}
+            alt={t('所选机组装车运输', 'Loading the selected generator')}
             width="1400"
             height="1000"
             loading="lazy"
@@ -330,7 +360,9 @@ export function PowerStory() {
               {t('为下一程，就位', 'READY FOR THE NEXT CHAPTER')}
             </p>
             <h2>
-              {t('装箱，就位。', 'Integrated. Protected.')}
+              {product === 'container'
+                ? t('整机，就位。', 'One complete system.')
+                : t('装箱，就位。', 'Integrated. Protected.')}
               <br />
               <em>{t('准备抵达。', 'Ready to go.')}</em>
             </h2>
@@ -351,7 +383,7 @@ export function PowerStory() {
         <div className="power-shot">
           <img
             className="power-static-scene"
-            src="/media/story/frame-0110.webp"
+            src={`${assetBase}/frame-0110.webp`}
             alt={t('福瑞斯运输卡车', 'FRS POWER delivery truck')}
             width="1400"
             height="1000"
@@ -525,11 +557,21 @@ export function PowerStory() {
           >
             <X />
           </DialogClose>
-          <Film src={`/media/products/${item.id}.mp4`} controls />
+          <div className="model-stage power-product-model">
+            <Suspense
+              fallback={
+                <output className="model-status">
+                  {t('正在准备模型…', 'Preparing the model…')}
+                </output>
+              }
+            >
+              <ModelViewer id={product} onClose={() => setProductOpen(false)} />
+            </Suspense>
+          </div>
           <div className="dialog-copy">
             <DialogTitle>{item.name[lang]}</DialogTitle>
             <DialogDescription>{item.desc[lang]}</DialogDescription>
-            <p>{item.range}</p>
+            <p>{range}</p>
             <a
               className="power-link"
               href={`/products/${item.id}?lang=${lang}`}

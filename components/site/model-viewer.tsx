@@ -18,6 +18,7 @@ export default function ModelViewer({
   const [rotating, setRotating] = useState(false);
   const rotation = useRef(false);
   const { lang } = useLanguage();
+  const enclosure = id === 'silent' || id === 'container';
   useEffect(() => {
     rotation.current = rotating;
   }, [rotating]);
@@ -71,12 +72,23 @@ export default function ModelViewer({
           });
           renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
           renderer.outputColorSpace = THREE.SRGBColorSpace;
-          renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          renderer.toneMappingExposure = 1.5;
+          const refinedGenerator =
+            id === 'open-frame-small' || id === 'silent' || id === 'container';
+          renderer.toneMapping = refinedGenerator
+            ? THREE.NeutralToneMapping
+            : THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = refinedGenerator ? 1 : 1.5;
           container.appendChild(renderer.domElement);
           const scene = new THREE.Scene();
           const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
-          camera.position.set(4, 2.5, 5);
+          // GLB is Y-up. The supplied enclosures expose their detailed long
+          // side at +X; their reference ends face -Z (silent) and +Z (container).
+          const initialView = new THREE.Vector3(
+            id === 'silent' || id === 'container' ? 5 : 4,
+            2.7,
+            id === 'open-frame-small' || id === 'silent' ? -5 : 5,
+          );
+          camera.position.copy(initialView);
           const controls = new OrbitControls(camera, renderer.domElement);
           releases.push(() => controls.dispose());
           controls.enableDamping = true;
@@ -109,8 +121,17 @@ export default function ModelViewer({
           const environment = pmrem.fromScene(room, 0.04);
           releases.push(() => environment.dispose());
           scene.environment = environment.texture;
-          scene.add(new THREE.HemisphereLight(0xf5f5f7, 0x626268, 3));
-          const key = new THREE.DirectionalLight(0xffffff, 3);
+          scene.add(
+            new THREE.HemisphereLight(
+              0xf5f5f7,
+              0x626268,
+              refinedGenerator ? 1.2 : 3,
+            ),
+          );
+          const key = new THREE.DirectionalLight(
+            0xffffff,
+            refinedGenerator ? 2 : 3,
+          );
           key.position.set(4, 8, 5);
           scene.add(key);
           const draco = new DRACOLoader();
@@ -120,6 +141,24 @@ export default function ModelViewer({
           loader.setDRACOLoader(draco);
           let object: InstanceType<typeof THREE.Group> | null = null;
           let modelGroup: InstanceType<typeof THREE.Group> | null = null;
+          let modelRadius = 0;
+          const fitCamera = () => {
+            if (!modelRadius) return;
+            const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+            const halfFov = Math.min(
+              verticalHalfFov,
+              Math.atan(Math.tan(verticalHalfFov) * camera.aspect),
+            );
+            // Fit the bounding sphere, so every rotation stays inside the
+            // canvas, including portrait displays and after a resize.
+            const distance = modelRadius / Math.sin(halfFov) / 0.9;
+            camera.position.setLength(
+              Math.max(
+                presentation ? camera.position.length() : initialView.length(),
+                distance,
+              ),
+            );
+          };
           let visible = true;
           let frame = 0;
           releases.push(() => cancelAnimationFrame(frame));
@@ -139,6 +178,7 @@ export default function ModelViewer({
                 2.5 + Math.sin(phase * Math.PI) * 0.65,
                 radius * 0.8,
               );
+              fitCamera();
               camera.lookAt(0, 0, 0);
             } else controls.update();
             renderer.render(scene, camera);
@@ -151,6 +191,7 @@ export default function ModelViewer({
               renderer.setSize(w, h);
               camera.aspect = w / h;
               camera.updateProjectionMatrix();
+              fitCamera();
             }
           };
           const observer = new ResizeObserver(size);
@@ -218,21 +259,32 @@ export default function ModelViewer({
             const bounds = new THREE.Box3().setFromObject(object);
             const center = bounds.getCenter(new THREE.Vector3());
             const dimensions = bounds.getSize(new THREE.Vector3());
-            const scale =
-              4 / Math.max(dimensions.x, dimensions.y, dimensions.z);
+            const longest = Math.max(dimensions.x, dimensions.y, dimensions.z);
+            if (!Number.isFinite(longest) || longest <= 0)
+              throw new Error('The model has no visible geometry.');
+            const scale = 4 / longest;
             object.position.sub(center);
             const group = new THREE.Group();
             modelGroup = group;
             group.add(object);
             group.scale.setScalar(scale);
             scene.add(group);
-            camera.position.set(4, 2.7, 5);
+            modelRadius = (dimensions.length() * scale) / 2;
+            camera.position.copy(initialView);
+            fitCamera();
             controls.target.set(0, 0, 0);
             controls.update();
             reset.current = () => {
-              camera.position.set(4, 2.7, 5);
+              rotation.current = false;
+              controls.autoRotate = false;
+              const damping = controls.enableDamping;
+              controls.enableDamping = false;
+              controls.update();
+              camera.position.copy(initialView);
+              fitCamera();
               controls.target.set(0, 0, 0);
               controls.update();
+              controls.enableDamping = damping;
               setRotating(false);
             };
             setState('ready');
@@ -256,11 +308,23 @@ export default function ModelViewer({
   return (
     <>
       {presentation && state !== 'ready' ? (
-        <Film
-          src={`/media/products/${id}.mp4`}
-          className="journey-fallback"
-          controls={state === 'error'}
-        />
+        enclosure ? (
+          <img
+            src={`/media/story/${id}/poster.webp`}
+            className="journey-fallback"
+            alt={
+              lang === 'zh'
+                ? '所选发电机组外观'
+                : 'Selected generator appearance'
+            }
+          />
+        ) : (
+          <Film
+            src={`/media/products/${id}.mp4`}
+            className="journey-fallback"
+            controls={state === 'error'}
+          />
+        )
       ) : null}
       <div
         ref={mount}
@@ -280,11 +344,11 @@ export default function ModelViewer({
         <div className="model-error" role="alert">
           <p>
             {lang === 'zh'
-              ? '此设备暂时无法显示三维模型，您仍可观看产品视频。'
-              : 'This device could not display the 3D model. You can still view the product video.'}
+              ? '此设备暂时无法显示三维模型，您仍可查看所选产品的外观预览。'
+              : 'This device could not display the 3D model. You can still view the selected product preview.'}
           </p>
           <button className="pill primary" onClick={onClose}>
-            {lang === 'zh' ? '返回产品视频' : 'Back to product video'}
+            {lang === 'zh' ? '返回产品预览' : 'Back to product preview'}
           </button>
         </div>
       ) : null}
@@ -312,7 +376,7 @@ export default function ModelViewer({
               {lang === 'zh' ? '重置视角' : 'Reset view'}
             </button>
             <button onClick={onClose}>
-              {lang === 'zh' ? '视频' : 'Video'}
+              {lang === 'zh' ? '外观预览' : 'Preview'}
             </button>
           </div>
         </div>
